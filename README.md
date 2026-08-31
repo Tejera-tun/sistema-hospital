@@ -36,3 +36,51 @@ Lady Cabral
 ## Estado del proyecto
 
 En desarrollo.
+
+
+## Proceso requerido para acceder al proyecto:
+
+-instalación de git (versión recomendada y utilizada para este proyecto versión 2.55.0 widonws.2)
+-instalación de github 
+-instalación de visual studio code (versión recomendada y utilizada para este proyecto versión 1.135.0 )
+
+# Extensiones utilizadas en Visual Studio Code (VSC):
+
+-Php Debug
+-Php intelephense
+-MySQL
+-Database Client
+
+-Instalación de MySQL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
