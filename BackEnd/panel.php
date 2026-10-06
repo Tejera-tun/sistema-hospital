@@ -272,9 +272,9 @@ $rol = $_SESSION["rol"];
                                 Completar una encuesta sobre tu experiencia.
                             </p>
 
-                            <button class="btn btn-flem">
+                            <a href="../FrontEnd/encuesta.php" class="btn btn-flem">
                                 Completar encuesta
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
