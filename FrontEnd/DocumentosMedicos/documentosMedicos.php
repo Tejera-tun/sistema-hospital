@@ -3,7 +3,6 @@
 
 session_start();
 
-// CONEXIÓN A MYSQL
 require_once __DIR__ . "/../../BackEnd/conexion.php";
 
 // VERIFICAR PERMISOS
@@ -12,7 +11,8 @@ if (
     !isset($_SESSION["rol"]) ||
     $_SESSION["rol"] !== "Administrador"
 ) {
-    die("Acceso denegado.");
+    header("Location: ../../BackEnd/login.php");
+    exit;
 }
 
 // OBTENER PACIENTES
@@ -27,6 +27,10 @@ if (!$resultado) {
     die("Error al obtener pacientes: " . $conexion->error);
 }
 
+function limpiar($dato) {
+    return htmlspecialchars((string)$dato, ENT_QUOTES, "UTF-8");
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -35,39 +39,116 @@ if (!$resultado) {
 <head>
 
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FLEM | Documentos médicos</title>
 
-    <title>Documentos Médicos | FLEM</title>
-
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 
     <style>
 
         body {
-            background-color: #f4f6f9;
+            background: #f4f8f6;
+            min-height: 100vh;
         }
 
-        .card {
-            border: none;
-            border-radius: 12px;
+        .navbar-flem {
+            background: #075c45;
         }
 
-        .card-header {
-            background-color: #0d6efd;
+        .brand-symbol {
+            color: #d4af37;
+            font-size: 28px;
+            margin-right: 8px;
+        }
+
+        .brand-name {
             color: white;
-            padding: 20px;
-            border-radius: 12px 12px 0 0 !important;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .gold {
+            color: #d4af37;
+        }
+
+        .contenedor {
+            max-width: 850px;
+            margin: 45px auto;
+        }
+
+        .documento-card {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .documento-header {
+            background: linear-gradient(135deg, #075c45, #0a7658);
+            color: white;
+            padding: 28px;
+        }
+
+        .documento-icono {
+            font-size: 42px;
+            color: #d4af37;
         }
 
         .form-label {
             font-weight: 600;
+            color: #263b33;
         }
 
-        .btn-primary {
+        .form-control,
+        .form-select {
+            border-radius: 10px;
             padding: 12px;
+            border: 1px solid #dce5e0;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #0a7658;
+            box-shadow: 0 0 0 0.2rem rgba(7, 92, 69, 0.12);
+        }
+
+        .btn-flem {
+            background: #075c45;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 13px;
+            font-weight: 600;
+        }
+
+        .btn-flem:hover {
+            background: #064936;
+            color: white;
+        }
+
+        .btn-volver {
+            background: #e9efec;
+            color: #075c45;
+            border: none;
+            border-radius: 9px;
+            padding: 10px 18px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .btn-volver:hover {
+            background: #dce8e2;
+            color: #064936;
+        }
+
+        .ayuda {
+            color: #718078;
+            font-size: 13px;
+        }
+
+        footer {
+            color: #718078;
         }
 
     </style>
@@ -76,45 +157,80 @@ if (!$resultado) {
 
 <body>
 
-<div class="container py-5">
+    <!-- BARRA SUPERIOR -->
 
-    <div class="row justify-content-center">
+    <nav class="navbar navbar-flem">
 
-        <div class="col-md-8 col-lg-7">
+        <div class="container">
 
-            <div class="card shadow-sm">
+            <span class="navbar-brand mb-0">
+                <span class="brand-symbol">⚕</span>
+                <span class="brand-name">FLEM</span>
+            </span>
 
-                <div class="card-header">
+            <a href="../../BackEnd/logout.php" class="btn btn-light">
+                Cerrar sesión
+            </a>
 
-                    <h4 class="mb-0">
-                        Documentos Médicos
-                    </h4>
+        </div>
 
-                    <small>
-                        Administración y carga de documentos de pacientes
-                    </small>
+    </nav>
+
+
+    <!-- CONTENIDO -->
+
+    <main class="container">
+
+        <div class="contenedor">
+
+            <div class="card documento-card shadow">
+
+                <!-- ENCABEZADO -->
+
+                <div class="documento-header">
+
+                    <div class="documento-icono mb-2">
+                        ▣
+                    </div>
+
+                    <p class="gold fw-semibold mb-2">
+                        SISTEMA HOSPITALARIO
+                    </p>
+
+                    <h2 class="fw-bold mb-1">
+                        Documentos médicos
+                    </h2>
+
+                    <p class="mb-0">
+                        Administración y carga de documentos de pacientes.
+                    </p>
 
                 </div>
 
-                <div class="card-body p-4">
 
-                    <h5 class="mb-3">
+                <!-- FORMULARIO -->
+
+                <div class="card-body p-4 p-md-5">
+
+                    <h4 class="fw-bold mb-2">
                         Cargar nuevo documento
-                    </h5>
+                    </h4>
 
-                    <p class="text-muted">
+                    <p class="text-secondary mb-4">
                         Completá los datos para asociar un archivo
                         al paciente correspondiente.
                     </p>
+
 
                     <form
                         action="../../BackEnd/DocumentosMedicos/subirDocumentos.php"
                         method="POST"
                         enctype="multipart/form-data">
 
+
                         <!-- PACIENTE -->
 
-                        <div class="mb-3">
+                        <div class="mb-4">
 
                             <label class="form-label">
                                 Seleccionar paciente
@@ -133,13 +249,11 @@ if (!$resultado) {
 
                                     <option value="<?= (int)$paciente["id"] ?>">
 
-                                        <?= htmlspecialchars(
+                                        <?= limpiar(
                                             $paciente["apellido"] . ", " .
                                             $paciente["nombre"] .
                                             " - CI: " .
-                                            $paciente["cedula"],
-                                            ENT_QUOTES,
-                                            "UTF-8"
+                                            $paciente["cedula"]
                                         ) ?>
 
                                     </option>
@@ -150,9 +264,10 @@ if (!$resultado) {
 
                         </div>
 
-                        <!-- NOMBRE -->
 
-                        <div class="mb-3">
+                        <!-- NOMBRE DEL DOCUMENTO -->
+
+                        <div class="mb-4">
 
                             <label class="form-label">
                                 Nombre del documento
@@ -168,9 +283,10 @@ if (!$resultado) {
 
                         </div>
 
+
                         <!-- CATEGORIA -->
 
-                        <div class="mb-3">
+                        <div class="mb-4">
 
                             <label class="form-label">
                                 Categoría del documento
@@ -209,9 +325,10 @@ if (!$resultado) {
 
                         </div>
 
+
                         <!-- DESCRIPCION -->
 
-                        <div class="mb-3">
+                        <div class="mb-4">
 
                             <label class="form-label">
                                 Descripción
@@ -220,10 +337,11 @@ if (!$resultado) {
                             <textarea
                                 name="descripcion"
                                 class="form-control"
-                                rows="3"
+                                rows="4"
                                 placeholder="Agregá información sobre el documento..."></textarea>
 
                         </div>
+
 
                         <!-- ARCHIVO -->
 
@@ -240,22 +358,35 @@ if (!$resultado) {
                                 accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx"
                                 required>
 
-                            <div class="form-text">
+                            <div class="ayuda mt-2">
                                 Formatos permitidos: PDF, JPG, PNG,
                                 DOCX y XLSX. Tamaño máximo: 10 MB.
                             </div>
 
                         </div>
 
-                        <!-- BOTON -->
 
-                        <button
-                            type="submit"
-                            class="btn btn-primary w-100">
+                        <!-- BOTONES -->
 
-                            Subir documento médico
+                        <div class="d-grid gap-3">
 
-                        </button>
+                            <button
+                                type="submit"
+                                class="btn btn-flem">
+
+                                Subir documento médico
+
+                            </button>
+
+                            <a
+                                href="../../BackEnd/panel.php"
+                                class="btn btn-volver text-center">
+
+                                ← Volver al panel administrativo
+
+                            </a>
+
+                        </div>
 
                     </form>
 
@@ -263,22 +394,24 @@ if (!$resultado) {
 
             </div>
 
-            <div class="text-center mt-3">
-
-                <a href="../../BackEnd/panel.php"
-                   class="text-decoration-none">
-
-                    Volver al panel administrativo
-
-                </a>
-
-            </div>
-
         </div>
 
-    </div>
+    </main>
 
-</div>
+
+    <!-- PIE DE PAGINA -->
+
+    <footer class="text-center py-4">
+
+        <div class="fw-bold">⚕ FLEM</div>
+        <div>Sistema Hospitalario</div>
+
+    </footer>
 
 </body>
 </html>
+
+<?php
+$resultado->free();
+$conexion->close();
+?>

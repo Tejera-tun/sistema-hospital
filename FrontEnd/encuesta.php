@@ -12,6 +12,7 @@ require_once __DIR__ . "/../BackEnd/conexion_encuestas.php";
 
 $id_encuesta = 1;
 
+// Obtener encuesta activa
 $sql = "SELECT *
         FROM encuestas
         WHERE id_encuesta = ?
@@ -28,6 +29,7 @@ if (!$encuesta) {
     die("La encuesta no está disponible.");
 }
 
+// Obtener preguntas
 $sql = "SELECT *
         FROM preguntas
         WHERE id_encuesta = ?
@@ -49,9 +51,13 @@ $preguntas = $stmt->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Encuesta de satisfacción | FLEM</title>
+    <!-- CORREGIDO: el campo real es Pregunta -->
+    <title>
+        <?= htmlspecialchars($encuesta["Pregunta"], ENT_QUOTES, "UTF-8"); ?>
+    </title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 
     <style>
 
@@ -63,174 +69,152 @@ $preguntas = $stmt->get_result();
         }
 
         .navbar-flem {
-            background: #075b46;
-            padding: 17px 0;
+            background: #075c45;
+            padding: 15px 0;
         }
 
-        .logo-flem {
+        .brand {
             color: white;
-            font-size: 22px;
+            font-size: 23px;
             font-weight: bold;
             letter-spacing: 2px;
             text-decoration: none;
         }
 
-        .logo-flem:hover {
-            color: #e8b832;
-        }
-
-        .btn-volver {
-            background: white;
-            color: #075b46;
-            padding: 9px 16px;
-            border-radius: 7px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .btn-volver:hover {
-            background: #e8f1ed;
-            color: #075b46;
+        .brand-symbol {
+            color: #d4af37;
+            font-size: 28px;
+            margin-right: 8px;
         }
 
         .contenedor {
             max-width: 850px;
-            margin: 45px auto;
+            margin: 40px auto;
             padding: 0 18px;
         }
 
         .encabezado {
-            background: linear-gradient(120deg, #075b46, #087b5b);
+            background: linear-gradient(135deg, #075c45, #0a7658);
             color: white;
-            padding: 30px;
-            border-radius: 16px;
+            padding: 35px;
+            border-radius: 17px;
             margin-bottom: 25px;
-            box-shadow: 0 5px 14px rgba(0,0,0,0.10);
+            box-shadow: 0 5px 15px rgba(0,0,0,.10);
         }
 
         .encabezado small {
-            color: #e8b832;
+            color: #e5b832;
             font-weight: bold;
             letter-spacing: 1px;
         }
 
         .encabezado h1 {
+            font-size: 30px;
             font-weight: bold;
-            margin-top: 10px;
+            margin-top: 12px;
         }
 
         .encabezado p {
+            color: #e7f1ed;
             margin-bottom: 0;
-            color: #edf6f2;
         }
 
-        .tarjeta {
+        .formulario {
             background: white;
             padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+            border-radius: 17px;
+            box-shadow: 0 4px 14px rgba(0,0,0,.06);
         }
 
         .pregunta {
-            padding: 22px;
+            background: #fff;
+            border: 1px solid #e4ebe7;
+            border-left: 4px solid #08775a;
+            border-radius: 12px;
+            padding: 20px;
             margin-bottom: 20px;
-            background: #f8faf9;
-            border: 1px solid #e5ece8;
-            border-left: 5px solid #075b46;
-            border-radius: 10px;
         }
 
         .pregunta-titulo {
             display: block;
             font-weight: bold;
             font-size: 16px;
-            margin-bottom: 16px;
-            color: #075b46;
+            margin-bottom: 15px;
+            color: #075c45;
         }
 
         .opcion {
             display: flex;
             align-items: center;
             gap: 10px;
-            background: white;
-            border: 1px solid #e2e9e5;
+            background: #f4f8f6;
             padding: 13px 15px;
             margin-bottom: 9px;
-            border-radius: 8px;
+            border-radius: 9px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: .2s;
         }
 
         .opcion:hover {
-            background: #edf6f1;
-            border-color: #075b46;
+            background: #e5f2ec;
         }
 
         .opcion input {
-            accent-color: #075b46;
+            accent-color: #08775a;
             width: 17px;
             height: 17px;
-            cursor: pointer;
         }
 
         textarea {
             width: 100%;
             min-height: 120px;
-            padding: 14px;
-            box-sizing: border-box;
-            border: 1px solid #d5dfd9;
+            padding: 13px;
+            border: 1px solid #ced9d3;
             border-radius: 9px;
             resize: vertical;
-            font-family: Arial, sans-serif;
         }
 
         textarea:focus {
             outline: none;
-            border-color: #075b46;
-            box-shadow: 0 0 0 3px rgba(7,91,70,0.10);
+            border-color: #08775a;
+            box-shadow: 0 0 0 3px rgba(8,119,90,.12);
         }
 
-        .boton {
+        .btn-flem {
             width: 100%;
-            padding: 15px;
+            padding: 14px;
             border: none;
             border-radius: 9px;
-            background: #075b46;
+            background: #075c45;
             color: white;
             font-size: 16px;
             font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
+            transition: .2s;
         }
 
-        .boton:hover {
-            background: #064735;
-            transform: translateY(-1px);
+        .btn-flem:hover {
+            background: #064936;
+            color: white;
         }
 
-        .pie {
+        .btn-volver {
+            color: white;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,.6);
+            border-radius: 8px;
+            padding: 9px 15px;
+            text-decoration: none;
+        }
+
+        .btn-volver:hover {
+            background: white;
+            color: #075c45;
+        }
+
+        footer {
             text-align: center;
-            color: #82918a;
-            font-size: 13px;
-            margin-top: 25px;
-        }
-
-        @media (max-width: 600px) {
-            .contenedor {
-                margin-top: 25px;
-            }
-
-            .encabezado {
-                padding: 23px;
-            }
-
-            .tarjeta {
-                padding: 18px;
-            }
-
-            .pregunta {
-                padding: 17px;
-            }
+            color: #78847e;
+            padding: 25px;
         }
 
     </style>
@@ -239,134 +223,162 @@ $preguntas = $stmt->get_result();
 
 <body>
 
-<nav class="navbar-flem">
-    <div class="container d-flex justify-content-between align-items-center">
+    <nav class="navbar navbar-flem">
 
-        <a href="../BackEnd/panel.php" class="logo-flem">
-            ⚕ FLEM
-        </a>
+        <div class="container d-flex justify-content-between align-items-center">
 
-        <a href="../BackEnd/panel.php" class="btn-volver">
-            Volver al panel
-        </a>
+            <a href="../BackEnd/panel.php" class="brand">
+                <span class="brand-symbol">⚕</span>FLEM
+            </a>
 
-    </div>
-</nav>
+            <a href="../BackEnd/panel.php" class="btn-volver">
+                Volver al panel
+            </a>
 
-<div class="contenedor">
+        </div>
 
-    <div class="encabezado">
+    </nav>
 
-        <small>SISTEMA HOSPITALARIO</small>
+    <main class="contenedor">
 
-        <h1>
-            <?= htmlspecialchars($encuesta["titulo"]) ?>
-        </h1>
+        <div class="encabezado">
 
-        <p>
-            <?= htmlspecialchars($encuesta["descripcion"]) ?>
-        </p>
+            <small>SISTEMA HOSPITALARIO</small>
 
-    </div>
+            <!-- CORREGIDO: columna Pregunta -->
+            <h1>
+                <?= htmlspecialchars($encuesta["Pregunta"], ENT_QUOTES, "UTF-8"); ?>
+            </h1>
 
-    <div class="tarjeta">
+            <p>
+                <?= htmlspecialchars($encuesta["descripcion"] ?? "", ENT_QUOTES, "UTF-8"); ?>
+            </p>
 
-        <h4 class="fw-bold mb-4" style="color: #075b46;">
-            Tu opinión es importante
-        </h4>
+        </div>
 
-        <form action="../BackEnd/respuestas.php" method="POST">
+        <div class="formulario">
 
-            <input
-                type="hidden"
-                name="id_encuesta"
-                value="<?= $id_encuesta ?>"
-            >
+            <div class="mb-4">
 
-            <?php while ($pregunta = $preguntas->fetch_assoc()): ?>
+                <h4 class="fw-bold" style="color:#075c45;">
+                    Encuesta de satisfacción
+                </h4>
 
-                <div class="pregunta">
+                <p class="text-secondary">
+                    Tu opinión nos ayuda a mejorar la atención del hospital.
+                </p>
 
-                    <span class="pregunta-titulo">
-                        <?= htmlspecialchars($pregunta["pregunta"]) ?>
-                    </span>
+            </div>
 
-                    <?php
+            <form action="../BackEnd/respuestas.php" method="POST">
 
-                    $sql = "SELECT *
-                            FROM opciones
-                            WHERE id_pregunta = ?
-                            ORDER BY id_opcion";
+                <input
+                    type="hidden"
+                    name="id_encuesta"
+                    value="<?= (int)$id_encuesta; ?>"
+                >
 
-                    $stmt_opciones = $conexion->prepare($sql);
+                <?php if ($preguntas->num_rows > 0): ?>
 
-                    $stmt_opciones->bind_param(
-                        "i",
-                        $pregunta["id_pregunta"]
-                    );
+                    <?php while ($pregunta = $preguntas->fetch_assoc()): ?>
 
-                    $stmt_opciones->execute();
+                        <div class="pregunta">
 
-                    $opciones = $stmt_opciones->get_result();
+                            <span class="pregunta-titulo">
+                                <?= htmlspecialchars($pregunta["pregunta"], ENT_QUOTES, "UTF-8"); ?>
+                            </span>
 
-                    ?>
+                            <?php
 
-                    <?php if ($opciones->num_rows > 0): ?>
+                            $sql_opciones = "SELECT *
+                                             FROM opciones
+                                             WHERE id_pregunta = ?
+                                             ORDER BY id_opcion";
 
-                        <?php while ($opcion = $opciones->fetch_assoc()): ?>
+                            $stmt_opciones = $conexion->prepare($sql_opciones);
 
-                            <label class="opcion">
+                            $stmt_opciones->bind_param(
+                                "i",
+                                $pregunta["id_pregunta"]
+                            );
 
-                                <input
-                                    type="radio"
-                                    name="pregunta_<?= (int) $pregunta["id_pregunta"] ?>"
-                                    value="<?= (int) $opcion["id_opcion"] ?>"
+                            $stmt_opciones->execute();
+
+                            $opciones = $stmt_opciones->get_result();
+
+                            ?>
+
+                            <?php if ($opciones->num_rows > 0): ?>
+
+                                <?php while ($opcion = $opciones->fetch_assoc()): ?>
+
+                                    <label class="opcion">
+
+                                        <input
+                                            type="radio"
+                                            name="pregunta_<?= (int)$pregunta["id_pregunta"]; ?>"
+                                            value="<?= (int)$opcion["id_opcion"]; ?>"
+                                            required
+                                        >
+
+                                        <span>
+                                            <?= htmlspecialchars($opcion["texto"], ENT_QUOTES, "UTF-8"); ?>
+                                        </span>
+
+                                    </label>
+
+                                <?php endwhile; ?>
+
+                            <?php else: ?>
+
+                                <textarea
+                                    name="pregunta_<?= (int)$pregunta["id_pregunta"]; ?>"
+                                    placeholder="Escribí tu respuesta..."
                                     required
-                                >
+                                ></textarea>
 
-                                <span>
-                                    <?= htmlspecialchars($opcion["texto"]) ?>
-                                </span>
+                            <?php endif; ?>
 
-                            </label>
+                            <?php $stmt_opciones->close(); ?>
 
-                        <?php endwhile; ?>
+                        </div>
 
-                    <?php else: ?>
+                    <?php endwhile; ?>
 
-                        <textarea
-                            name="pregunta_<?= (int) $pregunta["id_pregunta"] ?>"
-                            placeholder="Escribí tu respuesta..."
-                            required
-                        ></textarea>
+                <?php else: ?>
 
-                    <?php endif; ?>
+                    <div class="alert alert-info">
+                        Todavía no hay preguntas disponibles en esta encuesta.
+                    </div>
 
-                    <?php $stmt_opciones->close(); ?>
+                <?php endif; ?>
 
-                </div>
+                <?php if ($preguntas->num_rows > 0): ?>
 
-            <?php endwhile; ?>
+                    <button type="submit" class="btn btn-flem">
+                        Enviar encuesta
+                    </button>
 
-            <button class="boton" type="submit">
-                Enviar encuesta
-            </button>
+                <?php endif; ?>
 
-        </form>
+            </form>
 
-    </div>
+        </div>
 
-    <div class="pie">
-        FLEM - Sistema Hospitalario
-    </div>
+    </main>
 
-</div>
+    <footer>
+        <strong>⚕ FLEM</strong>
+        <div>Sistema Hospitalario</div>
+    </footer>
 
 </body>
+
 </html>
 
 <?php
+
 $stmt->close();
 $conexion->close();
-?>
 
+?>
