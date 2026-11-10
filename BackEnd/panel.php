@@ -1,4 +1,4 @@
-```php
+
 <?php
 
 session_start();
@@ -168,9 +168,7 @@ function limpiar($dato) {
         </div>
 
 
-        <!-- ================================= -->
         <!-- PANEL ADMINISTRADOR -->
-        <!-- ================================= -->
 
         <?php if ($rol === "Administrador") { ?>
 
@@ -264,7 +262,7 @@ function limpiar($dato) {
                                 los documentos médicos de los pacientes.
                             </p>
 
-                            <a href="../FrontEnd/documentosMedicos.php"
+                            <a href="../FrontEnd/DocumentosMedicos/documentosMedicos.php"
                                class="btn btn-flem">
 
                                 Ver documentación
@@ -312,9 +310,7 @@ function limpiar($dato) {
             </div>
 
 
-        <!-- ================================= -->
         <!-- PANEL PACIENTE -->
-        <!-- ================================= -->
 
         <?php } elseif ($rol === "Paciente") { ?>
 
@@ -523,4 +519,3 @@ function limpiar($dato) {
 </body>
 
 </html>
-```
