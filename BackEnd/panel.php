@@ -291,13 +291,13 @@ function limpiar($dato) {
                             </h5>
 
                             <p class="text-secondary">
-                                Consultar las encuestas de satisfacción.
+                                Administrar preguntas, opciones y encuestas de satisfacción.
                             </p>
 
-                            <a href="../FrontEnd/encuesta.php"
+                            <a href="Encuestas/gestionarEncuestas.php"
                                class="btn btn-flem">
 
-                                Ver encuestas
+                                Gestionar encuestas
 
                             </a>
 
