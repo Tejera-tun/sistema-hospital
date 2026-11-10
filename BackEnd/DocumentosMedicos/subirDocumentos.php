@@ -93,7 +93,10 @@ if ($archivo["size"] > 10 * 1024 * 1024) {
     die("El archivo supera el límite de 10 MB.");
 }
 
-if ($archivo["size"] <= 0 || !is_uploaded_file($archivo["tmp_name"])) {
+if (
+    $archivo["size"] <= 0 ||
+    !is_uploaded_file($archivo["tmp_name"])
+) {
     die("El archivo recibido no es válido.");
 }
 
@@ -132,6 +135,7 @@ if (!in_array($mime, $tiposPermitidos[$extension], true)) {
 }
 
 // Comprobar estructura de documentos Office
+
 if (in_array($extension, ["docx", "xlsx"], true)) {
 
     if (!class_exists("ZipArchive")) {
@@ -160,25 +164,24 @@ if (in_array($extension, ["docx", "xlsx"], true)) {
 }
 
 // =====================================
-// 6. CREAR ALMACENAMIENTO PRIVADO
+// 6. CREAR / VERIFICAR ALMACENAMIENTO
 // =====================================
 
-// Para XAMPP instalado en C:\xampp
-$directorio = dirname(__DIR__, 4)
+// Ruta:
+// htdocs/Documentos Medicos/documentos_medicos
+
+$directorio = dirname(__DIR__, 2)
     . DIRECTORY_SEPARATOR
-    . "almacen_privado"
+    . "Documentos Medicos"
     . DIRECTORY_SEPARATOR
     . "documentos_medicos";
 
 if (!is_dir($directorio)) {
-
-    if (!mkdir($directorio, 0750, true)) {
-        die("No se pudo crear el almacenamiento.");
-    }
+    die("No existe la carpeta de almacenamiento de documentos.");
 }
 
 if (!is_writable($directorio)) {
-    die("No hay permisos para guardar archivos.");
+    die("No hay permisos para guardar documentos.");
 }
 
 // =====================================
@@ -200,7 +203,7 @@ if (!move_uploaded_file($archivo["tmp_name"], $rutaDestino)) {
 // 8. GUARDAR INFORMACIÓN EN MYSQL
 // =====================================
 
-$rutaBD = "documentos_medicos/" . $nombreArchivo;
+$rutaBD = "Documentos Medicos/documentos_medicos/" . $nombreArchivo;
 
 $id_administrador = $_SESSION["id"];
 $tipo = strtoupper($extension);
