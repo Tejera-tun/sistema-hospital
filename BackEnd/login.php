@@ -1,3 +1,4 @@
+
 <?php
 
 session_start();
@@ -22,8 +23,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $consulta = $conexion->prepare(
-        "SELECT id, nombre, apellido, correo, password, rol FROM usuarios WHERE correo = ?"
+        "SELECT id, nombre, apellido, correo, password, rol
+         FROM usuarios
+         WHERE correo = ?"
     );
+
+    if (!$consulta) {
+        die("Error en la consulta: " . $conexion->error);
+    }
 
     $consulta->bind_param("s", $correo);
     $consulta->execute();
@@ -34,11 +41,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("Error: el correo o la contraseña son incorrectos.");
     }
 
+    // Obtener el usuario UNA SOLA VEZ
     $usuario = $resultado->fetch_assoc();
 
+    // Verificar contraseña
     if (!password_verify($password, $usuario["password"])) {
         die("Error: el correo o la contraseña son incorrectos.");
     }
+
+    // Guardar datos en la sesión
+    session_regenerate_id(true);
 
     $_SESSION["id"] = $usuario["id"];
     $_SESSION["nombre"] = $usuario["nombre"];
@@ -46,12 +58,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $_SESSION["correo"] = $usuario["correo"];
     $_SESSION["rol"] = $usuario["rol"];
 
-header("Location: panel.php");
-exit;
-}
- else {
+    // Redireccionar al panel
+    header("Location: panel.php");
+    exit;
+
+} else {
 
     echo "No se han recibido datos del formulario.";
+
 }
 
 ?>
