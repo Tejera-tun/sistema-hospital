@@ -373,7 +373,7 @@ function limpiar($dato) {
                                 médicos personales.
                             </p>
 
-                            <a href="../FrontEnd/misDocumentos.php"
+                            <a href="../FrontEnd/DocumentosMedicos/misDocumentos.php"
                                class="btn btn-flem">
 
                                 Ver mis documentos
