@@ -36,8 +36,7 @@ if (!$resultado) {
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Documentos Médicos | FLEM</title>
 
@@ -109,7 +108,7 @@ if (!$resultado) {
                     </p>
 
                     <form
-                        action="../../BackEnd/Documentos/subirDocumento.php"
+                        action="../../BackEnd/DocumentosMedicos/subirDocumentos.php"
                         method="POST"
                         enctype="multipart/form-data">
 
