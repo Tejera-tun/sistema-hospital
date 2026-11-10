@@ -1,3 +1,4 @@
+
 <?php
 
 session_start();
@@ -7,7 +8,7 @@ if (!isset($_SESSION["id"]) || ($_SESSION["rol"] ?? "") !== "Paciente") {
     exit;
 }
 
-require_once "../BackEnd/conexion_encuestas.php";
+require_once __DIR__ . "/../BackEnd/conexion_encuestas.php";
 
 $id_encuesta = 1;
 
@@ -21,6 +22,7 @@ $stmt->bind_param("i", $id_encuesta);
 $stmt->execute();
 
 $encuesta = $stmt->get_result()->fetch_assoc();
+$stmt->close();
 
 if (!$encuesta) {
     die("La encuesta no está disponible.");
@@ -45,89 +47,190 @@ $preguntas = $stmt->get_result();
 <head>
 
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title><?php echo htmlspecialchars($encuesta["titulo"]); ?></title>
+    <title>Encuesta de satisfacción | FLEM</title>
 
-    <link rel="stylesheet" href="css/estilo.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
 
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
+            background: #f3f7f5;
+            color: #26352f;
+        }
+
+        .navbar-flem {
+            background: #075b46;
+            padding: 17px 0;
+        }
+
+        .logo-flem {
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        .logo-flem:hover {
+            color: #e8b832;
+        }
+
+        .btn-volver {
+            background: white;
+            color: #075b46;
+            padding: 9px 16px;
+            border-radius: 7px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .btn-volver:hover {
+            background: #e8f1ed;
+            color: #075b46;
         }
 
         .contenedor {
-            max-width: 750px;
-            margin: 40px auto;
-            background-color: white;
-            padding: 35px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 850px;
+            margin: 45px auto;
+            padding: 0 18px;
         }
 
-        h1 {
-            color: #087f5b;
-            text-align: center;
+        .encabezado {
+            background: linear-gradient(120deg, #075b46, #087b5b);
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 14px rgba(0,0,0,0.10);
         }
 
-        .descripcion {
-            text-align: center;
-            color: #555;
-            margin-bottom: 35px;
+        .encabezado small {
+            color: #e8b832;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .encabezado h1 {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .encabezado p {
+            margin-bottom: 0;
+            color: #edf6f2;
+        }
+
+        .tarjeta {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
         }
 
         .pregunta {
-            margin-bottom: 30px;
+            padding: 22px;
+            margin-bottom: 20px;
+            background: #f8faf9;
+            border: 1px solid #e5ece8;
+            border-left: 5px solid #075b46;
+            border-radius: 10px;
         }
 
         .pregunta-titulo {
             display: block;
             font-weight: bold;
-            margin-bottom: 12px;
-            color: #333;
+            font-size: 16px;
+            margin-bottom: 16px;
+            color: #075b46;
         }
 
         .opcion {
-            display: block;
-            background-color: #f3f3f3;
-            padding: 12px;
-            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            border: 1px solid #e2e9e5;
+            padding: 13px 15px;
+            margin-bottom: 9px;
             border-radius: 8px;
             cursor: pointer;
+            transition: 0.2s;
         }
 
         .opcion:hover {
-            background-color: #e5f4ef;
+            background: #edf6f1;
+            border-color: #075b46;
+        }
+
+        .opcion input {
+            accent-color: #075b46;
+            width: 17px;
+            height: 17px;
+            cursor: pointer;
         }
 
         textarea {
             width: 100%;
             min-height: 120px;
-            padding: 12px;
+            padding: 14px;
             box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 8px;
+            border: 1px solid #d5dfd9;
+            border-radius: 9px;
             resize: vertical;
+            font-family: Arial, sans-serif;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #075b46;
+            box-shadow: 0 0 0 3px rgba(7,91,70,0.10);
         }
 
         .boton {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             border: none;
-            border-radius: 8px;
-            background-color: #087f5b;
+            border-radius: 9px;
+            background: #075b46;
             color: white;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            transition: 0.2s;
         }
 
         .boton:hover {
-            background-color: #066b4d;
+            background: #064735;
+            transform: translateY(-1px);
+        }
+
+        .pie {
+            text-align: center;
+            color: #82918a;
+            font-size: 13px;
+            margin-top: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .contenedor {
+                margin-top: 25px;
+            }
+
+            .encabezado {
+                padding: 23px;
+            }
+
+            .tarjeta {
+                padding: 18px;
+            }
+
+            .pregunta {
+                padding: 17px;
+            }
         }
 
     </style>
@@ -136,101 +239,134 @@ $preguntas = $stmt->get_result();
 
 <body>
 
+<nav class="navbar-flem">
+    <div class="container d-flex justify-content-between align-items-center">
+
+        <a href="../BackEnd/panel.php" class="logo-flem">
+            ⚕ FLEM
+        </a>
+
+        <a href="../BackEnd/panel.php" class="btn-volver">
+            Volver al panel
+        </a>
+
+    </div>
+</nav>
+
 <div class="contenedor">
 
-    <h1>
-        <?php echo htmlspecialchars($encuesta["Pregunta"]); ?>
-    </h1>
+    <div class="encabezado">
 
-    <p class="descripcion">
-        <?php echo htmlspecialchars($encuesta["descripcion"]); ?>
-    </p>
+        <small>SISTEMA HOSPITALARIO</small>
 
-    <form action="../BackEnd/respuestas.php" method="POST">
+        <h1>
+            <?= htmlspecialchars($encuesta["titulo"]) ?>
+        </h1>
 
-        <input
-            type="hidden"
-            name="id_encuesta"
-            value="<?php echo $id_encuesta; ?>"
-        >
+        <p>
+            <?= htmlspecialchars($encuesta["descripcion"]) ?>
+        </p>
 
-        <?php while ($pregunta = $preguntas->fetch_assoc()): ?>
+    </div>
 
-            <div class="pregunta">
+    <div class="tarjeta">
 
-                <span class="pregunta-titulo">
+        <h4 class="fw-bold mb-4" style="color: #075b46;">
+            Tu opinión es importante
+        </h4>
 
-                    <?php echo htmlspecialchars($pregunta["pregunta"]); ?>
+        <form action="../BackEnd/respuestas.php" method="POST">
 
-                </span>
+            <input
+                type="hidden"
+                name="id_encuesta"
+                value="<?= $id_encuesta ?>"
+            >
 
-                <?php
+            <?php while ($pregunta = $preguntas->fetch_assoc()): ?>
 
-                $sql = "SELECT *
-                        FROM opciones
-                        WHERE id_pregunta = ?
-                        ORDER BY id_opcion";
+                <div class="pregunta">
 
-                $stmt_opciones = $conexion->prepare($sql);
+                    <span class="pregunta-titulo">
+                        <?= htmlspecialchars($pregunta["pregunta"]) ?>
+                    </span>
 
-                $stmt_opciones->bind_param(
-                    "i",
-                    $pregunta["id_pregunta"]
-                );
+                    <?php
 
-                $stmt_opciones->execute();
+                    $sql = "SELECT *
+                            FROM opciones
+                            WHERE id_pregunta = ?
+                            ORDER BY id_opcion";
 
-                $opciones = $stmt_opciones->get_result();
+                    $stmt_opciones = $conexion->prepare($sql);
 
-                ?>
+                    $stmt_opciones->bind_param(
+                        "i",
+                        $pregunta["id_pregunta"]
+                    );
 
-                <?php if ($opciones->num_rows > 0): ?>
+                    $stmt_opciones->execute();
 
-                    <?php while ($opcion = $opciones->fetch_assoc()): ?>
+                    $opciones = $stmt_opciones->get_result();
 
-                        <label class="opcion">
+                    ?>
 
-                            <input
-                                type="radio"
-                                name="pregunta_<?php echo $pregunta["id_pregunta"]; ?>"
-                                value="<?php echo $opcion["id_opcion"]; ?>"
-                                required
-                            >
+                    <?php if ($opciones->num_rows > 0): ?>
 
-                            <?php echo htmlspecialchars($opcion["texto"]); ?>
+                        <?php while ($opcion = $opciones->fetch_assoc()): ?>
 
-                        </label>
+                            <label class="opcion">
 
-                    <?php endwhile; ?>
+                                <input
+                                    type="radio"
+                                    name="pregunta_<?= (int) $pregunta["id_pregunta"] ?>"
+                                    value="<?= (int) $opcion["id_opcion"] ?>"
+                                    required
+                                >
 
-                <?php else: ?>
+                                <span>
+                                    <?= htmlspecialchars($opcion["texto"]) ?>
+                                </span>
 
-                    <textarea
-                        name="pregunta_<?php echo $pregunta["id_pregunta"]; ?>"
-                        placeholder="Escriba su respuesta..."
-                        required
-                    ></textarea>
+                            </label>
 
-                <?php endif; ?>
+                        <?php endwhile; ?>
 
-            </div>
+                    <?php else: ?>
 
-        <?php endwhile; ?>
+                        <textarea
+                            name="pregunta_<?= (int) $pregunta["id_pregunta"] ?>"
+                            placeholder="Escribí tu respuesta..."
+                            required
+                        ></textarea>
 
-        <button class="boton" type="submit">
-            Enviar encuesta
-        </button>
+                    <?php endif; ?>
 
-    </form>
+                    <?php $stmt_opciones->close(); ?>
+
+                </div>
+
+            <?php endwhile; ?>
+
+            <button class="boton" type="submit">
+                Enviar encuesta
+            </button>
+
+        </form>
+
+    </div>
+
+    <div class="pie">
+        FLEM - Sistema Hospitalario
+    </div>
 
 </div>
 
 </body>
-
 </html>
 
 <?php
-
+$stmt->close();
 $conexion->close();
-
 ?>
+
