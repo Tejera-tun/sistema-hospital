@@ -1,4 +1,4 @@
-
+```php
 <?php
 
 session_start();
@@ -231,7 +231,7 @@ function limpiar($dato) {
                                 información médica, prevención y especialidades.
                             </p>
 
-                            <a href="Tratamientos/gestionarTratamientos.php"
+                            <a href="Tratamientos/listarSeguimiento.php"
                                class="btn btn-flem">
 
                                 Gestionar información
@@ -344,9 +344,12 @@ function limpiar($dato) {
                                 y tus datos personales.
                             </p>
 
-                            <button class="btn btn-flem">
+                            <a href="#informacion-cuenta"
+                               class="btn btn-flem">
+
                                 Ver mi información
-                            </button>
+
+                            </a>
 
                         </div>
 
@@ -407,7 +410,7 @@ function limpiar($dato) {
                                 de tus tratamientos médicos.
                             </p>
 
-                            <a href="../BackEnd/Tratamientos/verSeguimiento.php"
+                            <a href="Tratamientos/listarSeguimiento.php"
                                class="btn btn-flem">
 
                                 Ver seguimiento
@@ -459,7 +462,8 @@ function limpiar($dato) {
 
         <!-- INFORMACIÓN DE LA CUENTA -->
 
-        <div class="card info-card shadow-sm mt-5">
+        <div class="card info-card shadow-sm mt-5"
+             id="informacion-cuenta">
 
             <div class="card-body p-4">
 
@@ -519,3 +523,4 @@ function limpiar($dato) {
 </body>
 
 </html>
+```
