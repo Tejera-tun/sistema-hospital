@@ -3,7 +3,7 @@
 
 session_start();
 
-require_once "../conexion.php";
+require_once __DIR__ . "/../conexion.php";
 
 // =====================================
 // 1. VERIFICAR SESIÓN Y PERMISOS
@@ -13,7 +13,10 @@ if (!isset($_SESSION["id"])) {
     die("Debes iniciar sesión.");
 }
 
-if ($_SESSION["rol"] !== "Administrador") {
+if (
+    !isset($_SESSION["rol"]) ||
+    $_SESSION["rol"] !== "Administrador"
+) {
     die("Acceso denegado. Solo administradores.");
 }
 
@@ -134,7 +137,7 @@ if (!in_array($mime, $tiposPermitidos[$extension], true)) {
     die("El contenido del archivo no coincide con su extensión.");
 }
 
-// Comprobar estructura de documentos Office
+// COMPROBAR DOCUMENTOS OFFICE
 
 if (in_array($extension, ["docx", "xlsx"], true)) {
 
@@ -164,11 +167,8 @@ if (in_array($extension, ["docx", "xlsx"], true)) {
 }
 
 // =====================================
-// 6. CREAR / VERIFICAR ALMACENAMIENTO
+// 6. VERIFICAR ALMACENAMIENTO
 // =====================================
-
-// Ruta:
-// htdocs/Documentos Medicos/documentos_medicos
 
 $directorio = dirname(__DIR__, 2)
     . DIRECTORY_SEPARATOR
@@ -249,7 +249,7 @@ if ($consulta->execute()) {
     <script>
         alert('Documento médico cargado correctamente.');
         window.location.href =
-        '../../FrontEnd/documentosMedicos.php';
+        '/FrontEnd/DocumentosMedicos/documentosMedicos.php';
     </script>
     ";
 
