@@ -74,46 +74,57 @@ $preguntas = $stmt->get_result();
             color: #26352f;
         }
 
+        /* ENCABEZADO */
+
         .navbar-flem {
             background: var(--verde);
-            padding: 12px 0;
+            padding: 14px 0;
         }
 
-        .brand {
+        .marca {
             display: flex;
             align-items: center;
             gap: 12px;
             text-decoration: none;
         }
 
-        .logo-hospital {
-            width: 48px;
-            height: 48px;
-            object-fit: contain;
-        }
-
-        .brand-text {
-            color: white;
-            font-size: 23px;
+        .brand-name {
+            color: var(--dorado);
+            font-size: 27px;
             font-weight: bold;
             letter-spacing: 2px;
+            white-space: nowrap;
         }
 
-        .brand-text .flem {
+        .brand-x {
             color: var(--dorado);
         }
 
-        .brand-text .cruz {
-            color: var(--dorado);
-            margin: 0 3px;
+        .logo-hospital {
+            width: 115px;
+            height: 55px;
+            object-fit: contain;
+            background: transparent;
+            border: none;
+            padding: 0;
         }
 
-        .brand-text small {
-            display: block;
-            font-size: 11px;
-            font-weight: normal;
-            letter-spacing: 1px;
+        .btn-volver {
+            color: white;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,.6);
+            border-radius: 8px;
+            padding: 9px 15px;
+            text-decoration: none;
+            transition: .2s;
         }
+
+        .btn-volver:hover {
+            background: white;
+            color: var(--verde);
+        }
+
+        /* CONTENIDO */
 
         .contenedor {
             max-width: 850px;
@@ -146,6 +157,8 @@ $preguntas = $stmt->get_result();
             color: #e7f1ed;
             margin-bottom: 0;
         }
+
+        /* FORMULARIO */
 
         .formulario {
             background: white;
@@ -225,51 +238,52 @@ $preguntas = $stmt->get_result();
             color: white;
         }
 
-        .btn-volver {
-            color: white;
-            background: transparent;
-            border: 1px solid rgba(255,255,255,.6);
-            border-radius: 8px;
-            padding: 9px 15px;
-            text-decoration: none;
-        }
+        /* PIE DE PÁGINA */
 
-        .btn-volver:hover {
-            background: white;
-            color: var(--verde);
-        }
-
-        footer {
+        .footer-flem {
             text-align: center;
-            color: #78847e;
-            padding: 25px;
+            background: white;
+            border-top: 3px solid var(--dorado);
+            margin-top: 55px;
+            padding: 30px 18px;
         }
 
-        footer strong {
+        .footer-title {
             color: var(--verde);
+            font-size: 19px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
-        footer span {
-            color: var(--dorado);
+        .footer-description {
+            max-width: 800px;
+            margin: auto;
+            color: #66736c;
+            font-size: 14px;
+            line-height: 1.7;
         }
 
-        @media (max-width: 600px) {
+        .footer-copy {
+            color: #89938e;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 576px) {
+
+            .brand-name {
+                font-size: 20px;
+            }
+
             .logo-hospital {
-                width: 38px;
-                height: 38px;
+                width: 85px;
+                height: 45px;
             }
 
-            .brand-text {
-                font-size: 19px;
-            }
-
-            .brand-text small {
-                font-size: 9px;
-            }
-
-            .btn-volver {
-                padding: 8px 10px;
-                font-size: 13px;
+            .marca {
+                gap: 7px;
             }
 
             .encabezado {
@@ -281,8 +295,9 @@ $preguntas = $stmt->get_result();
             }
 
             .formulario {
-                padding: 18px;
+                padding: 20px;
             }
+
         }
 
     </style>
@@ -291,22 +306,23 @@ $preguntas = $stmt->get_result();
 
 <body>
 
+    <!-- ENCABEZADO -->
+
     <nav class="navbar navbar-flem">
 
         <div class="container d-flex justify-content-between align-items-center">
 
-            <a href="../BackEnd/panel.php" class="brand">
+            <a href="../BackEnd/panel.php" class="marca">
+
+                <span class="brand-name">
+                    FLEM <span class="brand-x">×</span>
+                </span>
 
                 <img
                     src="img/logo-hospital-clinicas.png"
                     alt="Logo Hospital de Clínicas"
                     class="logo-hospital"
                 >
-
-                <span class="brand-text">
-                    <span class="flem">FLEM</span><span class="cruz">×</span>
-                    <small>HOSPITAL DE CLÍNICAS</small>
-                </span>
 
             </a>
 
@@ -319,6 +335,8 @@ $preguntas = $stmt->get_result();
     </nav>
 
     <main class="contenedor">
+
+        <!-- INFORMACIÓN DE LA ENCUESTA -->
 
         <div class="encabezado">
 
@@ -333,6 +351,8 @@ $preguntas = $stmt->get_result();
             </p>
 
         </div>
+
+        <!-- FORMULARIO DE ENCUESTA -->
 
         <div class="formulario">
 
@@ -445,9 +465,22 @@ $preguntas = $stmt->get_result();
 
     </main>
 
-    <footer>
-        <strong><span>FLEM</span> × Hospital de Clínicas</strong>
-        <div>Sistema Hospitalario</div>
+    <!-- PIE DE PÁGINA -->
+
+    <footer class="footer-flem">
+
+        <div class="footer-title">
+            FLEM × Hospital de Clínicas
+        </div>
+
+        <p class="footer-description">
+            Somos una empresa especializada en la digitalización de servicios mediante el desarrollo de páginas web y soluciones tecnológicas. Nuestro objetivo es optimizar procesos, facilitar el acceso a la información y mejorar la gestión de las organizaciones mediante herramientas modernas, accesibles y eficientes.
+        </p>
+
+        <div class="footer-copy">
+            © <?= date("Y"); ?> FLEM. Todos los derechos reservados.
+        </div>
+
     </footer>
 
 </body>

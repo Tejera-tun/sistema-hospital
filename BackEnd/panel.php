@@ -24,7 +24,7 @@ function limpiar($dato) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>FLEM × Hospital de Clínicas | Panel principal</title>
+    <title>FLEM | Sistema Hospitalario</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           rel="stylesheet">
@@ -33,7 +33,7 @@ function limpiar($dato) {
 
         :root {
             --verde: #075c45;
-            --verde-oscuro: #064936;
+            --verde-oscuro: #064735;
             --dorado: #d4af37;
             --fondo: #f4f8f6;
         }
@@ -44,47 +44,42 @@ function limpiar($dato) {
             font-family: Arial, sans-serif;
         }
 
-        /* ENCABEZADO */
-
         .navbar-flem {
             background: var(--verde);
             padding: 14px 0;
         }
 
-        .brand-flem {
+        .flem-partner-brand {
             display: flex;
             align-items: center;
             gap: 12px;
             text-decoration: none;
+            flex-wrap: wrap;
         }
 
-        .brand-name {
+        .flem-partner-name {
             color: var(--dorado);
-            font-size: 24px;
             font-weight: 800;
             letter-spacing: 2px;
+            font-size: 25px;
+            white-space: nowrap;
         }
 
-        .brand-symbol {
+        .flem-partner-x {
             color: var(--dorado);
-            font-size: 27px;
+            font-size: 25px;
+            font-weight: 700;
         }
 
-        .brand-x {
-            color: var(--dorado);
-            font-size: 27px;
-            font-weight: bold;
-        }
-
-        .logo-hospital {
-            width: 150px;
-            height: 48px;
+        .hospital-logo {
+            width: 118px;
+            height: 55px;
             object-fit: contain;
             background: transparent;
+            border: none;
             padding: 0;
+            border-radius: 0;
         }
-
-        /* COLORES */
 
         .gold {
             color: var(--dorado);
@@ -100,33 +95,28 @@ function limpiar($dato) {
         .role-badge {
             background: var(--dorado);
             color: #173d31;
-            font-weight: 700;
+            font-weight: 600;
         }
-
-        /* TARJETAS */
 
         .option-card {
             border: none;
             border-radius: 18px;
-            transition: transform .25s, box-shadow .25s;
+            transition: 0.25s;
         }
 
         .option-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,.10) !important;
         }
 
         .medical-icon {
             font-size: 38px;
-            color: #b8962e;
+            color: var(--dorado);
         }
 
         .btn-flem {
             background: var(--verde);
             color: white;
             border: none;
-            border-radius: 9px;
-            padding: 9px 16px;
         }
 
         .btn-flem:hover {
@@ -139,38 +129,47 @@ function limpiar($dato) {
             border-radius: 18px;
         }
 
-        .info-title {
+        .footer-flem {
+            background: white;
+            border-top: 3px solid var(--dorado);
+            margin-top: 55px;
+            padding: 30px 18px;
+        }
+
+        .footer-title {
             color: var(--verde);
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 10px;
         }
 
-        footer {
-            color: #6c757d;
+        .footer-description {
+            max-width: 800px;
+            margin: 0 auto;
+            color: #66736c;
+            font-size: 14px;
+            line-height: 1.7;
         }
 
-        .footer-brand {
-            color: var(--dorado);
-            font-weight: 800;
-            letter-spacing: 2px;
+        .footer-copy {
+            color: #89938e;
+            font-size: 12px;
+            margin-top: 15px;
         }
 
-        @media (max-width: 500px) {
+        @media (max-width: 480px) {
 
-            .brand-flem {
+            .flem-partner-name {
+                font-size: 19px;
+            }
+
+            .hospital-logo {
+                width: 90px;
+                height: 45px;
+            }
+
+            .flem-partner-brand {
                 gap: 7px;
-            }
-
-            .brand-name {
-                font-size: 18px;
-            }
-
-            .brand-symbol,
-            .brand-x {
-                font-size: 21px;
-            }
-
-            .logo-hospital {
-                width: 105px;
-                height: 40px;
             }
 
         }
@@ -181,24 +180,22 @@ function limpiar($dato) {
 
 <body>
 
-    <!-- ENCABEZADO FLEM × HOSPITAL DE CLÍNICAS -->
+    <!-- ENCABEZADO -->
 
     <nav class="navbar navbar-flem">
 
         <div class="container">
 
-            <a href="panel.php" class="brand-flem">
+            <a href="panel.php" class="flem-partner-brand">
 
-                <span class="brand-symbol">⚕</span>
+                <span class="flem-partner-name">FLEM</span>
 
-                <span class="brand-name">FLEM</span>
-
-                <span class="brand-x">×</span>
+                <span class="flem-partner-x">×</span>
 
                 <img
+                    class="hospital-logo"
                     src="../FrontEnd/img/logo-hospital-clinicas.png"
-                    alt="Hospital de Clínicas"
-                    class="logo-hospital"
+                    alt="Logo del Hospital de Clínicas"
                 >
 
             </a>
@@ -210,7 +207,6 @@ function limpiar($dato) {
         </div>
 
     </nav>
-
 
     <main class="container py-5">
 
@@ -253,7 +249,6 @@ function limpiar($dato) {
 
         </div>
 
-
         <!-- PANEL ADMINISTRADOR -->
 
         <?php if ($rol === "Administrador") { ?>
@@ -295,8 +290,7 @@ function limpiar($dato) {
 
                 </div>
 
-
-                <!-- INFORMACIÓN MÉDICA -->
+                <!-- GESTIÓN DE INFORMACIÓN MÉDICA -->
 
                 <div class="col-md-6 col-lg-4">
 
@@ -327,7 +321,6 @@ function limpiar($dato) {
                     </div>
 
                 </div>
-
 
                 <!-- DOCUMENTACIÓN -->
 
@@ -360,7 +353,6 @@ function limpiar($dato) {
                     </div>
 
                 </div>
-
 
                 <!-- ENCUESTAS -->
 
@@ -395,7 +387,6 @@ function limpiar($dato) {
 
             </div>
 
-
         <!-- PANEL PACIENTE -->
 
         <?php } elseif ($rol === "Paciente") { ?>
@@ -405,7 +396,6 @@ function limpiar($dato) {
             </h2>
 
             <div class="row g-4">
-
 
                 <!-- MI INFORMACIÓN -->
 
@@ -439,7 +429,6 @@ function limpiar($dato) {
 
                 </div>
 
-
                 <!-- MIS DOCUMENTOS -->
 
                 <div class="col-md-6 col-lg-4">
@@ -472,8 +461,7 @@ function limpiar($dato) {
 
                 </div>
 
-
-                <!-- SEGUIMIENTO -->
+                <!-- SEGUIMIENTO DEL TRATAMIENTO -->
 
                 <div class="col-md-6 col-lg-4">
 
@@ -504,7 +492,6 @@ function limpiar($dato) {
                     </div>
 
                 </div>
-
 
                 <!-- ENCUESTA -->
 
@@ -541,7 +528,6 @@ function limpiar($dato) {
 
         <?php } ?>
 
-
         <!-- INFORMACIÓN DE LA CUENTA -->
 
         <div class="card info-card shadow-sm mt-5"
@@ -549,7 +535,7 @@ function limpiar($dato) {
 
             <div class="card-body p-4">
 
-                <h5 class="fw-bold info-title mb-3">
+                <h5 class="fw-bold mb-3">
                     Información de la cuenta
                 </h5>
 
@@ -591,20 +577,23 @@ function limpiar($dato) {
 
     </main>
 
-
     <!-- PIE DE PÁGINA -->
 
-    <footer class="text-center py-4">
+    <footer class="footer-flem text-center">
 
-        <div class="footer-brand">
+        <div class="footer-title">
             FLEM × Hospital de Clínicas
         </div>
 
-        <div>Sistema Hospitalario</div>
+        <p class="footer-description">
+            Somos una empresa especializada en la digitalización de servicios mediante el desarrollo de páginas web y soluciones tecnológicas. Nuestro objetivo es optimizar procesos, facilitar el acceso a la información y mejorar la gestión de las organizaciones mediante herramientas modernas, accesibles y eficientes.
+        </p>
+
+        <div class="footer-copy">
+            © <?= date("Y"); ?> FLEM. Todos los derechos reservados.
+        </div>
 
     </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 

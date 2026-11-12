@@ -1,308 +1,354 @@
 
-<?php
+<!DOCTYPE html>
+<html lang="es">
 
-session_start();
+<head>
 
-require_once __DIR__ . "/conexion.php";
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-// Mostrar errores con el diseño de FLEM
-function mostrarError($mensaje)
-{
-    ?>
-    <!DOCTYPE html>
-    <html lang="es">
+    <title>FLEM | Inicio de sesión</title>
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 
-        <title>Error de inicio de sesión | FLEM</title>
+    <style>
 
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-              rel="stylesheet">
+        :root {
+            --verde: #075c45;
+            --verde-oscuro: #064735;
+            --dorado: #d4af37;
+            --fondo: #f4f8f6;
+        }
 
-        <style>
-            :root {
-                --verde: #075c45;
-                --verde-oscuro: #064735;
-                --dorado: #d4af37;
-                --fondo: #f4f8f6;
-            }
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--fondo);
+            font-family: Arial, sans-serif;
+            color: #26352f;
+        }
 
-            body {
-                background: var(--fondo);
-                font-family: Arial, sans-serif;
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-            }
+        /* ENCABEZADO */
 
-            .navbar-flem {
-                background: var(--verde);
-                padding: 12px 0;
-            }
+        .navbar-flem {
+            background: var(--verde);
+            padding: 14px 0;
+        }
 
-            .brand {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                text-decoration: none;
+        .marca {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-name {
+            color: var(--dorado);
+            font-size: 27px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+
+        .brand-x {
+            color: var(--dorado);
+        }
+
+        .logo-hospital {
+            width: 115px;
+            height: 55px;
+            object-fit: contain;
+            background: transparent;
+            border: none;
+            padding: 0;
+        }
+
+        /* CONTENIDO */
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding: 45px 0;
+        }
+
+        .login-card {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .login-card .card-body {
+            padding: 40px;
+        }
+
+        .medical-symbol {
+            font-size: 55px;
+            color: var(--dorado);
+        }
+
+        .flem-title {
+            color: var(--verde);
+            font-weight: bold;
+            letter-spacing: 4px;
+        }
+
+        .hospital-title {
+            color: #758179;
+            font-size: 14px;
+        }
+
+        .form-label {
+            color: #34483e;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            padding: 12px;
+            border: 1px solid #dce5e0;
+        }
+
+        .form-control:focus {
+            border-color: var(--verde);
+            box-shadow: 0 0 0 .2rem rgba(7,92,69,.12);
+        }
+
+        .btn-flem {
+            background: var(--verde);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+        }
+
+        .btn-flem:hover {
+            background: var(--verde-oscuro);
+            color: white;
+        }
+
+        .registro-link {
+            color: var(--verde);
+        }
+
+        .registro-link:hover {
+            color: var(--verde-oscuro);
+            text-decoration: underline !important;
+        }
+
+        /* PIE DE PÁGINA */
+
+        .footer-flem {
+            background: white;
+            border-top: 3px solid var(--dorado);
+            padding: 27px 18px;
+            text-align: center;
+        }
+
+        .footer-title {
+            color: var(--verde);
+            font-size: 19px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .footer-description {
+            max-width: 800px;
+            margin: auto;
+            color: #66736c;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .footer-copy {
+            color: #89938e;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 576px) {
+
+            .brand-name {
+                font-size: 20px;
             }
 
             .logo-hospital {
-                width: 48px;
-                height: 48px;
-                object-fit: contain;
+                width: 85px;
+                height: 45px;
             }
 
-            .brand-text {
-                color: white;
-                font-size: 23px;
-                font-weight: bold;
-                letter-spacing: 2px;
+            .marca {
+                gap: 7px;
             }
 
-            .brand-text .flem,
-            .brand-text .cruz {
-                color: var(--dorado);
-            }
-
-            .brand-text small {
-                display: block;
-                font-size: 11px;
-                font-weight: normal;
-                letter-spacing: 1px;
-            }
-
-            .contenedor {
-                flex: 1;
-                display: flex;
-                justify-content: center;
-                align-items: center;
+            .login-card .card-body {
                 padding: 25px;
             }
 
-            .tarjeta {
-                background: white;
-                width: 100%;
-                max-width: 460px;
-                padding: 40px 30px;
-                border-radius: 17px;
-                text-align: center;
-                box-shadow: 0 5px 20px rgba(0,0,0,.08);
-            }
+        }
 
-            .icono {
-                width: 75px;
-                height: 75px;
-                background: #f8edc9;
-                color: #a98519;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 38px;
-                font-weight: bold;
-                margin: 0 auto 20px;
-            }
+    </style>
 
-            h2 {
-                color: var(--verde);
-                font-weight: bold;
-                margin-bottom: 12px;
-            }
+</head>
 
-            .mensaje {
-                color: #68756e;
-                margin-bottom: 25px;
-                line-height: 1.6;
-            }
+<body>
 
-            .boton {
-                display: block;
-                width: 100%;
-                background: var(--verde);
-                color: white;
-                padding: 12px;
-                border-radius: 8px;
-                text-decoration: none;
-                font-weight: bold;
-                border: none;
-                cursor: pointer;
-            }
+    <!-- ENCABEZADO -->
 
-            .boton:hover {
-                background: var(--verde-oscuro);
-                color: white;
-            }
+    <nav class="navbar navbar-flem">
 
-            .enlace {
-                display: inline-block;
-                margin-top: 18px;
-                color: var(--verde);
-                text-decoration: none;
-                font-weight: bold;
-            }
+        <div class="container">
 
-            .enlace:hover {
-                text-decoration: underline;
-            }
+            <a href="login.html" class="marca">
 
-            .pie {
-                text-align: center;
-                color: #82918a;
-                padding: 15px;
-                font-size: 13px;
-            }
+                <span class="brand-name">
+                    FLEM <span class="brand-x">×</span>
+                </span>
 
-            @media (max-width: 500px) {
-                .logo-hospital {
-                    width: 38px;
-                    height: 38px;
-                }
+                <img
+                    src="img/logo-hospital-clinicas.png"
+                    alt="Logo Hospital de Clínicas"
+                    class="logo-hospital"
+                >
 
-                .brand-text {
-                    font-size: 19px;
-                }
+            </a>
 
-                .brand-text small {
-                    font-size: 9px;
-                }
+        </div>
 
-                .tarjeta {
-                    padding: 30px 22px;
-                }
-            }
-        </style>
-    </head>
+    </nav>
 
-    <body>
 
-        <nav class="navbar-flem">
-            <div class="container">
+    <!-- INICIO DE SESIÓN -->
 
-                <a href="../FrontEnd/login.html" class="brand">
+    <main class="container">
 
-                    <img
-                        src="../FrontEnd/img/logo-hospital-clinicas.png"
-                        alt="Logo Hospital de Clínicas"
-                        class="logo-hospital"
-                    >
+        <div class="row justify-content-center w-100">
 
-                    <span class="brand-text">
-                        <span class="flem">FLEM</span><span class="cruz"> ×</span>
-                        <small>HOSPITAL DE CLÍNICAS</small>
-                    </span>
+            <div class="col-12 col-sm-10 col-md-7 col-lg-5">
 
-                </a>
+                <div class="card login-card shadow-lg">
+
+                    <div class="card-body">
+
+                        <div class="text-center mb-4">
+
+                            <div class="medical-symbol">
+                                ⚕
+                            </div>
+
+                            <h1 class="flem-title">
+                                FLEM
+                            </h1>
+
+                            <p class="hospital-title">
+                                Sistema Hospitalario
+                            </p>
+
+                        </div>
+
+
+                        <!-- FORMULARIO ORIGINAL -->
+
+                        <form action="../BackEnd/login.php" method="POST">
+
+                            <div class="mb-3">
+
+                                <label for="correo" class="form-label fw-semibold">
+                                    Correo electrónico
+                                </label>
+
+                                <input
+                                    type="email"
+                                    class="form-control"
+                                    id="correo"
+                                    name="correo"
+                                    placeholder="ejemplo@correo.com"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="mb-4">
+
+                                <label for="password" class="form-label fw-semibold">
+                                    Contraseña
+                                </label>
+
+                                <input
+                                    type="password"
+                                    class="form-control"
+                                    id="password"
+                                    name="password"
+                                    placeholder="Ingresá tu contraseña"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="d-grid">
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-flem btn-lg"
+                                >
+                                    Iniciar sesión
+                                </button>
+
+                            </div>
+
+                        </form>
+
+
+                        <!-- REGISTRO -->
+
+                        <div class="text-center mt-4">
+
+                            <span class="text-secondary">
+                                ¿No tenés una cuenta?
+                            </span>
+
+                            <a
+                                href="registro.html"
+                                class="text-decoration-none fw-semibold registro-link"
+                            >
+                                Registrate
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
-        </nav>
 
-        <main class="contenedor">
+        </div>
 
-            <div class="tarjeta">
+    </main>
 
-                <div class="icono">!</div>
 
-                <h2>Datos incorrectos</h2>
+    <!-- PIE DE PÁGINA -->
 
-                <p class="mensaje">
-                    <?= htmlspecialchars($mensaje, ENT_QUOTES, "UTF-8") ?>
-                </p>
+    <footer class="footer-flem">
 
-                <button class="boton" onclick="history.back()">
-                    Volver a intentar
-                </button>
-
-                <a href="../FrontEnd/login.html" class="enlace">
-                    Volver al inicio de sesión
-                </a>
-
-            </div>
-
-        </main>
-
-        <footer class="pie">
+        <div class="footer-title">
             FLEM × Hospital de Clínicas
-            <br>
-            Sistema de gestión hospitalaria
-        </footer>
+        </div>
 
-    </body>
-    </html>
-    <?php
-    exit;
-}
+        <p class="footer-description">
+            Somos una empresa especializada en la digitalización de servicios mediante el desarrollo de páginas web y soluciones tecnológicas. Nuestro objetivo es optimizar procesos, facilitar el acceso a la información y mejorar la gestión de las organizaciones mediante herramientas modernas, accesibles y eficientes.
+        </p>
 
-// Comprobar que se recibieron datos mediante POST
-if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    mostrarError("Debés ingresar desde el formulario de inicio de sesión.");
-}
+        <div class="footer-copy">
+            © 2026 FLEM. Todos los derechos reservados.
+        </div>
 
-if (!isset($_POST["correo"]) || !isset($_POST["password"])) {
-    mostrarError("Faltan datos. Completá el correo y la contraseña.");
-}
+    </footer>
 
-// Obtener datos
-$correo = trim($_POST["correo"]);
-$password = $_POST["password"];
+</body>
 
-// Validar campos vacíos
-if ($correo === "" || $password === "") {
-    mostrarError("El correo y la contraseña son obligatorios.");
-}
-
-// Validar formato del correo
-if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-    mostrarError("El formato del correo electrónico no es válido.");
-}
-
-// Buscar usuario en la base de datos
-$consulta = $conexion->prepare(
-    "SELECT id, nombre, apellido, correo, password, rol
-     FROM usuarios
-     WHERE correo = ?"
-);
-
-if (!$consulta) {
-    mostrarError("Ocurrió un problema al iniciar sesión. Intentá nuevamente.");
-}
-
-$consulta->bind_param("s", $correo);
-$consulta->execute();
-
-$resultado = $consulta->get_result();
-
-// Comprobar si existe el usuario
-if ($resultado->num_rows === 0) {
-    $consulta->close();
-    mostrarError("El correo o la contraseña son incorrectos.");
-}
-
-$usuario = $resultado->fetch_assoc();
-$consulta->close();
-
-// Verificar contraseña cifrada
-if (!password_verify($password, $usuario["password"])) {
-    mostrarError("El correo o la contraseña son incorrectos.");
-}
-
-// Regenerar identificador de sesión
-session_regenerate_id(true);
-
-// Guardar información del usuario en la sesión
-$_SESSION["id"] = $usuario["id"];
-$_SESSION["nombre"] = $usuario["nombre"];
-$_SESSION["apellido"] = $usuario["apellido"];
-$_SESSION["correo"] = $usuario["correo"];
-$_SESSION["rol"] = $usuario["rol"];
-
-// Cerrar conexión
-$conexion->close();
-
-// Redirigir al panel
-header("Location: panel.php");
-exit;
-
-?>
+</html>

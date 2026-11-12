@@ -1,49 +1,24 @@
 
 <?php
-
 session_start();
 
 require_once __DIR__ . "/../conexion.php";
 
-// ===================================
-// VERIFICAR SESIÓN Y PERMISOS
-// ===================================
-
-if (
-    !isset($_SESSION["id"]) ||
-    !isset($_SESSION["rol"]) ||
-    !in_array($_SESSION["rol"], ["Administrador", "Paciente"], true)
-) {
+if (!isset($_SESSION["id"])) {
     header("Location: ../login.php");
     exit;
 }
 
 $esAdministrador = $_SESSION["rol"] === "Administrador";
 
-// TOKEN DE SEGURIDAD
-if (empty($_SESSION["csrf"])) {
-    $_SESSION["csrf"] = bin2hex(random_bytes(32));
-}
-
-function limpiar($dato) {
-    return htmlspecialchars((string)$dato, ENT_QUOTES, "UTF-8");
-}
-
-// ===================================
-// CONSULTAR SEGUIMIENTOS
-// ===================================
-
 if ($esAdministrador) {
-
     $consulta = $conexion->prepare(
         "SELECT s.*, u.nombre, u.apellido, u.cedula
          FROM seguimientos s
          INNER JOIN usuarios u ON s.usuario_id = u.id
          ORDER BY s.fecha DESC, s.id DESC"
     );
-
 } else {
-
     $consulta = $conexion->prepare(
         "SELECT s.*, u.nombre, u.apellido, u.cedula
          FROM seguimientos s
@@ -57,27 +32,22 @@ if ($esAdministrador) {
 
 $consulta->execute();
 $resultados = $consulta->get_result();
-
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Seguimientos médicos | FLEM × Hospital de Clínicas</title>
+    <title>Seguimientos médicos | FLEM</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-
         :root {
             --verde: #075c45;
-            --verde-oscuro: #064936;
+            --verde-oscuro: #064735;
             --dorado: #d4af37;
             --fondo: #f4f8f6;
         }
@@ -88,14 +58,12 @@ $resultados = $consulta->get_result();
             color: #26352f;
         }
 
-        /* ENCABEZADO */
-
         .navbar-flem {
             background: var(--verde);
             padding: 14px 0;
         }
 
-        .brand-flem {
+        .marca {
             display: flex;
             align-items: center;
             gap: 12px;
@@ -104,40 +72,38 @@ $resultados = $consulta->get_result();
 
         .brand-name {
             color: var(--dorado);
-            font-size: 24px;
-            font-weight: 800;
+            font-size: 25px;
+            font-weight: bold;
             letter-spacing: 2px;
+            white-space: nowrap;
         }
 
         .brand-x {
             color: var(--dorado);
-            font-size: 27px;
-            font-weight: bold;
         }
 
         .logo-hospital {
-            width: 150px;
-            height: 48px;
+            width: 115px;
+            height: 55px;
             object-fit: contain;
             background: transparent;
+            border: none;
             padding: 0;
         }
 
-        /* CONTENIDO */
-
         .contenedor {
-            max-width: 1300px;
+            max-width: 1150px;
             margin: 45px auto;
             padding: 0 18px;
         }
 
         .encabezado {
-            background: linear-gradient(120deg, var(--verde), #0a7658);
+            background: linear-gradient(120deg, var(--verde), #087b5b);
             color: white;
-            padding: 35px;
-            border-radius: 18px;
+            padding: 30px;
+            border-radius: 16px;
             margin-bottom: 30px;
-            box-shadow: 0 5px 14px rgba(0,0,0,.08);
+            box-shadow: 0 5px 14px rgba(0,0,0,0.10);
         }
 
         .encabezado small {
@@ -148,24 +114,22 @@ $resultados = $consulta->get_result();
 
         .encabezado h1 {
             font-weight: bold;
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         .tarjeta {
             background: white;
             padding: 25px;
-            border-radius: 18px;
-            box-shadow: 0 3px 12px rgba(0,0,0,.06);
+            border-radius: 16px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
         }
-
-        /* BOTONES */
 
         .btn-flem {
             background: var(--verde);
             color: white;
             border: none;
-            border-radius: 8px;
-            padding: 10px 17px;
+            border-radius: 7px;
+            padding: 9px 16px;
             text-decoration: none;
             display: inline-block;
         }
@@ -179,11 +143,10 @@ $resultados = $consulta->get_result();
             background: white;
             color: var(--verde);
             border: none;
-            border-radius: 8px;
-            padding: 10px 17px;
+            border-radius: 7px;
+            padding: 9px 16px;
             text-decoration: none;
             display: inline-block;
-            font-weight: 600;
         }
 
         .btn-volver:hover {
@@ -195,19 +158,12 @@ $resultados = $consulta->get_result();
             background: var(--dorado);
             color: #26352f;
             border: none;
-            border-radius: 8px;
-            padding: 10px 17px;
-            font-weight: bold;
-            text-decoration: none;
-            display: inline-block;
         }
 
         .btn-nuevo:hover {
-            background: #c39d2e;
+            background: #c19d2e;
             color: #26352f;
         }
-
-        /* TABLA */
 
         .table thead th {
             background: var(--verde);
@@ -222,9 +178,9 @@ $resultados = $consulta->get_result();
         }
 
         .estado {
-            background: #f4e6b7;
-            color: #624d0c;
-            padding: 7px 12px;
+            background: #f5e9bd;
+            color: #604b0b;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
@@ -234,334 +190,210 @@ $resultados = $consulta->get_result();
         .titulo-seccion {
             color: var(--verde);
             font-weight: bold;
-            margin-bottom: 22px;
+            margin-bottom: 20px;
         }
 
-        .sin-resultados {
+        .footer-flem {
+            background: white;
+            border-top: 3px solid var(--dorado);
+            margin-top: 55px;
+            padding: 30px 18px;
+        }
+
+        .footer-title {
             color: var(--verde);
-            font-size: 45px;
+            font-size: 19px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
-        .acciones {
-            min-width: 150px;
+        .footer-description {
+            max-width: 800px;
+            margin: auto;
+            color: #66736c;
+            font-size: 14px;
+            line-height: 1.7;
         }
 
-        footer {
-            color: #6c757d;
-        }
-
-        .footer-brand {
-            color: var(--dorado);
-            font-weight: 800;
-            letter-spacing: 2px;
+        .footer-copy {
+            color: #89938e;
+            font-size: 12px;
+            margin-top: 15px;
         }
 
         @media (max-width: 600px) {
-
             .encabezado {
-                padding: 23px;
+                padding: 22px;
             }
 
-            .brand-flem {
-                gap: 7px;
+            .acciones {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-top: 20px;
             }
 
             .brand-name {
-                font-size: 18px;
-            }
-
-            .brand-x {
-                font-size: 21px;
+                font-size: 19px;
             }
 
             .logo-hospital {
-                width: 105px;
-                height: 40px;
+                width: 85px;
+                height: 45px;
             }
 
+            .marca {
+                gap: 7px;
+            }
         }
-
     </style>
-
 </head>
 
 <body>
 
-    <!-- ENCABEZADO FLEM × HOSPITAL DE CLÍNICAS -->
+<!-- ENCABEZADO -->
 
-    <nav class="navbar navbar-flem">
+<nav class="navbar navbar-flem">
+    <div class="container d-flex justify-content-between align-items-center">
 
-        <div class="container d-flex justify-content-between align-items-center">
+        <a href="../panel.php" class="marca">
+            <span class="brand-name">FLEM <span class="brand-x">×</span></span>
 
-            <a href="../panel.php" class="brand-flem">
+            <img
+                src="../../FrontEnd/img/logo-hospital-clinicas.png"
+                alt="Logo Hospital de Clínicas"
+                class="logo-hospital"
+            >
+        </a>
 
-                <span class="brand-name">FLEM</span>
+        <a href="../panel.php" class="btn-volver">
+            Volver al panel
+        </a>
 
-                <span class="brand-x">×</span>
+    </div>
+</nav>
 
-                <img
-                    src="../../FrontEnd/img/logo-hospital-clinicas.png"
-                    alt="Hospital de Clínicas"
-                    class="logo-hospital"
-                >
+<div class="contenedor">
 
-            </a>
+    <div class="encabezado">
+        <small>SISTEMA HOSPITALARIO</small>
 
-            <a href="../panel.php" class="btn-volver">
-                Volver al panel
-            </a>
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <h1>Seguimientos médicos</h1>
+                <p class="mb-0">
+                    Consultá las actualizaciones y la evolución de los tratamientos médicos.
+                </p>
+            </div>
 
-        </div>
-
-    </nav>
-
-
-    <main class="contenedor">
-
-        <!-- PRESENTACIÓN -->
-
-        <div class="encabezado">
-
-            <small>SISTEMA HOSPITALARIO</small>
-
-            <div class="d-flex justify-content-between align-items-center flex-wrap">
-
-                <div>
-
-                    <h1>Seguimientos médicos</h1>
-
-                    <p class="mb-0">
-                        Consultá las actualizaciones y la evolución de los tratamientos médicos.
-                    </p>
-
+            <?php if ($esAdministrador): ?>
+                <div class="acciones">
+                    <a href="crearTratamiento.php" class="btn btn-nuevo fw-bold">
+                        + Nuevo seguimiento
+                    </a>
                 </div>
-
-                <?php if ($esAdministrador): ?>
-
-                    <div class="mt-3 mt-md-0">
-
-                        <a href="crearTratamiento.php" class="btn-nuevo">
-                            + Nuevo seguimiento
-                        </a>
-
-                    </div>
-
-                <?php endif; ?>
-
-            </div>
-
+            <?php endif; ?>
         </div>
+    </div>
 
+    <div class="tarjeta">
 
-        <!-- MENSAJES DE OPERACIONES -->
+        <h4 class="titulo-seccion">Historial de seguimientos</h4>
 
-        <?php if (isset($_GET["eliminado"])): ?>
+        <?php if ($resultados->num_rows > 0): ?>
 
-            <div class="alert alert-success">
-                Seguimiento eliminado correctamente.
-            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
 
-        <?php endif; ?>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Título</th>
+                            <th>Descripción</th>
+                            <th>Estado</th>
 
-        <?php if (isset($_GET["actualizado"])): ?>
+                            <?php if ($esAdministrador): ?>
+                                <th>Paciente</th>
+                                <th>Cédula</th>
+                            <?php endif; ?>
+                        </tr>
+                    </thead>
 
-            <div class="alert alert-success">
-                Seguimiento actualizado correctamente.
-            </div>
-
-        <?php endif; ?>
-
-        <?php if (isset($_GET["error"])): ?>
-
-            <div class="alert alert-danger">
-                No se pudo completar la operación solicitada.
-            </div>
-
-        <?php endif; ?>
-
-
-        <!-- HISTORIAL -->
-
-        <div class="tarjeta">
-
-            <h4 class="titulo-seccion">
-                Historial de seguimientos
-            </h4>
-
-            <?php if ($resultados->num_rows > 0): ?>
-
-                <div class="table-responsive">
-
-                    <table class="table table-hover align-middle mb-0">
-
-                        <thead>
-
+                    <tbody>
+                        <?php while ($fila = $resultados->fetch_assoc()): ?>
                             <tr>
+                                <td>
+                                    <?= htmlspecialchars($fila["fecha"]) ?>
+                                </td>
 
-                                <th>Fecha</th>
+                                <td class="fw-semibold">
+                                    <?= htmlspecialchars($fila["titulo"]) ?>
+                                </td>
 
-                                <th>Título</th>
+                                <td>
+                                    <?= nl2br(htmlspecialchars($fila["descripcion"])) ?>
+                                </td>
 
-                                <th>Descripción</th>
-
-                                <th>Estado</th>
+                                <td>
+                                    <span class="estado">
+                                        <?= htmlspecialchars($fila["estado"]) ?>
+                                    </span>
+                                </td>
 
                                 <?php if ($esAdministrador): ?>
+                                    <td>
+                                        <?= htmlspecialchars($fila["nombre"] . " " . $fila["apellido"]) ?>
+                                    </td>
 
-                                    <th>Paciente</th>
-
-                                    <th>Cédula</th>
-
-                                    <th>Acciones</th>
-
+                                    <td>
+                                        <?= htmlspecialchars($fila["cedula"]) ?>
+                                    </td>
                                 <?php endif; ?>
-
                             </tr>
+                        <?php endwhile; ?>
+                    </tbody>
 
-                        </thead>
+                </table>
+            </div>
 
-                        <tbody>
+        <?php else: ?>
 
-                            <?php while ($fila = $resultados->fetch_assoc()): ?>
+            <div class="text-center py-5">
+                <div style="font-size: 45px; color: #c49b29;">✚</div>
+                <h5 class="mt-3">No hay seguimientos registrados</h5>
+                <p class="text-muted mb-0">
+                    Cuando haya nuevas actualizaciones médicas, aparecerán aquí.
+                </p>
+            </div>
 
-                                <tr>
+        <?php endif; ?>
 
-                                    <td>
-                                        <?= limpiar($fila["fecha"]) ?>
-                                    </td>
+    </div>
 
-                                    <td class="fw-semibold">
-                                        <?= limpiar($fila["titulo"]) ?>
-                                    </td>
+</div>
 
-                                    <td>
-                                        <?= nl2br(limpiar($fila["descripcion"])) ?>
-                                    </td>
+<!-- PIE DE PÁGINA -->
 
-                                    <td>
+<footer class="footer-flem text-center">
 
-                                        <span class="estado">
-                                            <?= limpiar($fila["estado"]) ?>
-                                        </span>
+    <div class="footer-title">
+        FLEM × Hospital de Clínicas
+    </div>
 
-                                    </td>
+    <p class="footer-description">
+        Somos una empresa especializada en la digitalización de servicios mediante el desarrollo de páginas web y soluciones tecnológicas. Nuestro objetivo es optimizar procesos, facilitar el acceso a la información y mejorar la gestión de las organizaciones mediante herramientas modernas, accesibles y eficientes.
+    </p>
 
-                                    <?php if ($esAdministrador): ?>
+    <div class="footer-copy">
+        © <?= date("Y"); ?> FLEM. Todos los derechos reservados.
+    </div>
 
-                                        <td>
-                                            <?= limpiar($fila["nombre"] . " " . $fila["apellido"]) ?>
-                                        </td>
-
-                                        <td>
-                                            <?= limpiar($fila["cedula"]) ?>
-                                        </td>
-
-                                        <!-- ACCIONES DEL ADMINISTRADOR -->
-
-                                        <td class="acciones">
-
-                                            <div class="d-flex gap-2 flex-wrap">
-
-                                                <!-- EDITAR -->
-
-                                                <a
-                                                    href="actualizarSeguimiento.php?id=<?= (int)$fila["id"] ?>"
-                                                    class="btn btn-warning btn-sm"
-                                                >
-                                                    Editar
-                                                </a>
-
-
-                                                <!-- ELIMINAR -->
-
-                                                <form
-                                                    method="POST"
-                                                    action="eliminarSeguimiento.php"
-                                                    onsubmit="return confirm('¿Seguro que querés eliminar este seguimiento?');"
-                                                >
-
-                                                    <input
-                                                        type="hidden"
-                                                        name="id"
-                                                        value="<?= (int)$fila["id"] ?>"
-                                                    >
-
-                                                    <input
-                                                        type="hidden"
-                                                        name="csrf"
-                                                        value="<?= limpiar($_SESSION["csrf"]) ?>"
-                                                    >
-
-                                                    <button
-                                                        type="submit"
-                                                        class="btn btn-danger btn-sm"
-                                                    >
-                                                        Eliminar
-                                                    </button>
-
-                                                </form>
-
-                                            </div>
-
-                                        </td>
-
-                                    <?php endif; ?>
-
-                                </tr>
-
-                            <?php endwhile; ?>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            <?php else: ?>
-
-                <div class="text-center py-5">
-
-                    <div class="sin-resultados">✚</div>
-
-                    <h5 class="mt-3">
-                        No hay seguimientos registrados
-                    </h5>
-
-                    <p class="text-muted mb-0">
-                        Cuando haya nuevas actualizaciones médicas, aparecerán aquí.
-                    </p>
-
-                </div>
-
-            <?php endif; ?>
-
-        </div>
-
-    </main>
-
-
-    <!-- PIE DE PÁGINA -->
-
-    <footer class="text-center py-4">
-
-        <div class="footer-brand">
-            FLEM × Hospital de Clínicas
-        </div>
-
-        <div>Sistema Hospitalario</div>
-
-    </footer>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</footer>
 
 </body>
-
 </html>
 
 <?php
-
 $consulta->close();
 $conexion->close();
-
 ?>

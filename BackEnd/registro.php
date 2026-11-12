@@ -1,252 +1,441 @@
 
-<?php
+<!DOCTYPE html>
+<html lang="es">
 
-session_start();
+<head>
 
-require_once __DIR__ . "/conexion.php";
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-// Mostrar mensajes de error con el diseño de FLEM
-function mostrarError($mensaje)
-{
-    http_response_code(400);
-    ?>
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Error de registro | FLEM</title>
+    <title>FLEM | Registro</title>
 
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-              rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 
-        <style>
-            body {
-                background: #f4f8f6;
-                font-family: Arial, sans-serif;
-                min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 20px;
+    <style>
+
+        :root {
+            --verde: #075c45;
+            --verde-oscuro: #064735;
+            --dorado: #d4af37;
+            --fondo: #f4f8f6;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--fondo);
+            font-family: Arial, sans-serif;
+            color: #26352f;
+        }
+
+        /* ENCABEZADO */
+
+        .navbar-flem {
+            background: var(--verde);
+            padding: 14px 0;
+        }
+
+        .marca {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-name {
+            color: var(--dorado);
+            font-weight: bold;
+            letter-spacing: 2px;
+            font-size: 27px;
+            white-space: nowrap;
+        }
+
+        .brand-x {
+            color: var(--dorado);
+        }
+
+        .logo-hospital {
+            width: 115px;
+            height: 55px;
+            object-fit: contain;
+            background: transparent;
+            border: none;
+            padding: 0;
+        }
+
+        /* CONTENIDO */
+
+        main {
+            flex: 1;
+            padding-top: 45px;
+            padding-bottom: 45px;
+        }
+
+        .register-card {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .register-card .card-body {
+            padding: 40px;
+        }
+
+        .medical-symbol {
+            font-size: 48px;
+            color: var(--dorado);
+        }
+
+        .flem-title {
+            color: var(--verde);
+            font-weight: 800;
+            letter-spacing: 3px;
+        }
+
+        .form-label {
+            color: #34483e;
+        }
+
+        .form-control {
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #dce5e0;
+        }
+
+        .form-control:focus {
+            border-color: var(--verde);
+            box-shadow: 0 0 0 .2rem rgba(7,92,69,.12);
+        }
+
+        .btn-flem {
+            background: var(--verde);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+        }
+
+        .btn-flem:hover {
+            background: var(--verde-oscuro);
+            color: white;
+        }
+
+        .login-link {
+            color: var(--verde);
+        }
+
+        .login-link:hover {
+            color: var(--verde-oscuro);
+            text-decoration: underline !important;
+        }
+
+        /* PIE DE PÁGINA */
+
+        .footer-flem {
+            background: white;
+            border-top: 3px solid var(--dorado);
+            padding: 27px 18px;
+            text-align: center;
+        }
+
+        .footer-title {
+            color: var(--verde);
+            font-size: 19px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .footer-description {
+            max-width: 800px;
+            margin: auto;
+            color: #66736c;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .footer-copy {
+            color: #89938e;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 576px) {
+
+            .brand-name {
+                font-size: 20px;
             }
 
-            .tarjeta {
-                background: white;
-                max-width: 480px;
-                width: 100%;
-                padding: 35px;
-                border-radius: 16px;
-                box-shadow: 0 5px 20px rgba(0,0,0,.08);
-                text-align: center;
+            .logo-hospital {
+                width: 85px;
+                height: 45px;
             }
 
             .marca {
-                color: #075c45;
-                font-size: 25px;
-                font-weight: bold;
-                letter-spacing: 3px;
+                gap: 7px;
             }
 
-            .marca span {
-                color: #d4af37;
+            .register-card .card-body {
+                padding: 23px;
             }
 
-            .btn-flem {
-                background: #075c45;
-                color: white;
-                border: none;
-                padding: 11px 20px;
-                border-radius: 8px;
-                text-decoration: none;
-                display: inline-block;
-                margin-top: 15px;
-            }
+        }
 
-            .btn-flem:hover {
-                background: #064735;
-                color: white;
-            }
-        </style>
-    </head>
+    </style>
 
-    <body>
+</head>
 
-        <div class="tarjeta">
+<body>
 
-            <div class="marca">
-                <span>FLEM</span> ×
-            </div>
+    <!-- ENCABEZADO -->
 
-            <h4 class="mt-4 mb-3">No se pudo completar el registro</h4>
+    <nav class="navbar navbar-flem">
 
-            <div class="alert alert-danger">
-                <?= htmlspecialchars($mensaje, ENT_QUOTES, "UTF-8") ?>
-            </div>
+        <div class="container">
 
-            <a href="../FrontEnd/registro.html" class="btn-flem">
-                Volver al registro
+            <a href="login.html" class="marca">
+
+                <span class="brand-name">
+                    FLEM <span class="brand-x">×</span>
+                </span>
+
+                <img
+                    src="img/logo-hospital-clinicas.png"
+                    alt="Logo Hospital de Clínicas"
+                    class="logo-hospital"
+                >
+
             </a>
 
-            <div class="mt-3">
-                <a href="../FrontEnd/login.html" class="text-secondary">
-                    Ir al inicio de sesión
-                </a>
+        </div>
+
+    </nav>
+
+
+    <!-- REGISTRO -->
+
+    <main class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-12 col-md-10 col-lg-8">
+
+                <div class="card register-card shadow-lg">
+
+                    <div class="card-body">
+
+                        <div class="text-center mb-4">
+
+                            <div class="medical-symbol">
+                                ⚕
+                            </div>
+
+                            <h1 class="flem-title">
+                                Crear cuenta
+                            </h1>
+
+                            <p class="text-secondary">
+                                Registro de paciente
+                            </p>
+
+                        </div>
+
+
+                        <!-- FORMULARIO ORIGINAL -->
+
+                        <form action="../BackEnd/registro.php" method="POST">
+
+                            <div class="row">
+
+                                <div class="col-md-6 mb-3">
+
+                                    <label for="nombre" class="form-label fw-semibold">
+                                        Nombre
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="nombre"
+                                        name="nombre"
+                                        placeholder="Ingresá tu nombre"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="col-md-6 mb-3">
+
+                                    <label for="apellido" class="form-label fw-semibold">
+                                        Apellido
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="apellido"
+                                        name="apellido"
+                                        placeholder="Ingresá tu apellido"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="col-md-6 mb-3">
+
+                                    <label for="cedula" class="form-label fw-semibold">
+                                        Cédula
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="cedula"
+                                        name="cedula"
+                                        placeholder="Ingresá tu cédula"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="col-md-6 mb-3">
+
+                                    <label for="edad" class="form-label fw-semibold">
+                                        Edad
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        id="edad"
+                                        name="edad"
+                                        placeholder="Ingresá tu edad"
+                                        min="0"
+                                        max="120"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="col-md-6 mb-3">
+
+                                    <label for="telefono" class="form-label fw-semibold">
+                                        Teléfono
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="telefono"
+                                        name="telefono"
+                                        placeholder="Ingresá tu teléfono"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="col-md-6 mb-3">
+
+                                    <label for="correo" class="form-label fw-semibold">
+                                        Correo electrónico
+                                    </label>
+
+                                    <input
+                                        type="email"
+                                        class="form-control"
+                                        id="correo"
+                                        name="correo"
+                                        placeholder="ejemplo@correo.com"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="col-12 mb-4">
+
+                                    <label for="password" class="form-label fw-semibold">
+                                        Contraseña
+                                    </label>
+
+                                    <input
+                                        type="password"
+                                        class="form-control"
+                                        id="password"
+                                        name="password"
+                                        placeholder="Ingresá una contraseña"
+                                        required
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="d-grid">
+
+                                <button type="submit" class="btn btn-flem btn-lg">
+                                    Crear cuenta
+                                </button>
+
+                            </div>
+
+                        </form>
+
+
+                        <!-- INICIAR SESIÓN -->
+
+                        <div class="text-center mt-4">
+
+                            <span class="text-secondary">
+                                ¿Ya tenés una cuenta?
+                            </span>
+
+                            <a
+                                href="login.html"
+                                class="text-decoration-none fw-semibold login-link"
+                            >
+                                Iniciá sesión
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
 
-    </body>
-    </html>
-    <?php
-    exit;
-}
+    </main>
 
-// Comprobar que el formulario se haya enviado mediante POST
-if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    mostrarError("No se han recibido datos del formulario.");
-}
 
-// Comprobar que todos los campos existan
-$campos = [
-    "nombre",
-    "apellido",
-    "cedula",
-    "edad",
-    "telefono",
-    "correo",
-    "password"
-];
+    <!-- PIE DE PÁGINA -->
 
-foreach ($campos as $campo) {
-    if (!isset($_POST[$campo])) {
-        mostrarError("Faltan datos del formulario.");
-    }
-}
+    <footer class="footer-flem">
 
-// Obtener y limpiar los datos
-$nombre = trim($_POST["nombre"]);
-$apellido = trim($_POST["apellido"]);
-$cedula = trim($_POST["cedula"]);
-$edad = trim($_POST["edad"]);
-$telefono = trim($_POST["telefono"]);
-$correo = trim($_POST["correo"]);
-$password = $_POST["password"];
+        <div class="footer-title">
+            FLEM × Hospital de Clínicas
+        </div>
 
-// Comprobar campos vacíos
-if (
-    $nombre === "" ||
-    $apellido === "" ||
-    $cedula === "" ||
-    $edad === "" ||
-    $telefono === "" ||
-    $correo === "" ||
-    $password === ""
-) {
-    mostrarError("Todos los campos son obligatorios.");
-}
+        <p class="footer-description">
+            Somos una empresa especializada en la digitalización de servicios mediante el desarrollo de páginas web y soluciones tecnológicas. Nuestro objetivo es optimizar procesos, facilitar el acceso a la información y mejorar la gestión de las organizaciones mediante herramientas modernas, accesibles y eficientes.
+        </p>
 
-// Validar nombre
-if (!preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/u", $nombre)) {
-    mostrarError("El nombre solo puede contener letras.");
-}
+        <div class="footer-copy">
+            © 2026 FLEM. Todos los derechos reservados.
+        </div>
 
-// Validar apellido
-if (!preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/u", $apellido)) {
-    mostrarError("El apellido solo puede contener letras.");
-}
+    </footer>
 
-// Validar edad
-$edad_validada = filter_var($edad, FILTER_VALIDATE_INT);
+</body>
 
-if (
-    $edad_validada === false ||
-    $edad_validada < 0 ||
-    $edad_validada > 120
-) {
-    mostrarError("La edad ingresada no es válida.");
-}
-
-// Validar correo electrónico
-if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-    mostrarError("El correo electrónico no es válido.");
-}
-
-// Comprobar si la cédula o el correo ya existen
-$consulta = $conexion->prepare(
-    "SELECT id FROM usuarios WHERE cedula = ? OR correo = ?"
-);
-
-if (!$consulta) {
-    mostrarError("No se pudo realizar la consulta. Intentá nuevamente.");
-}
-
-$consulta->bind_param("ss", $cedula, $correo);
-$consulta->execute();
-
-$resultado = $consulta->get_result();
-
-if ($resultado->num_rows > 0) {
-    $consulta->close();
-    mostrarError("La cédula o el correo electrónico ya están registrados.");
-}
-
-$consulta->close();
-
-// Cifrar la contraseña antes de guardarla
-$password_segura = password_hash($password, PASSWORD_DEFAULT);
-
-// Asignar automáticamente el rol de paciente
-$rol = "Paciente";
-
-// Insertar el nuevo usuario
-$insertar = $conexion->prepare(
-    "INSERT INTO usuarios
-    (nombre, apellido, cedula, correo, edad, password, rol, telefono)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-);
-
-if (!$insertar) {
-    mostrarError("No se pudo preparar el registro. Intentá nuevamente.");
-}
-
-$insertar->bind_param(
-    "ssssisss",
-    $nombre,
-    $apellido,
-    $cedula,
-    $correo,
-    $edad_validada,
-    $password_segura,
-    $rol,
-    $telefono
-);
-
-// Ejecutar el registro
-if ($insertar->execute()) {
-
-    $id_usuario = $conexion->insert_id;
-
-    // Iniciar sesión automáticamente
-    session_regenerate_id(true);
-
-    $_SESSION["id"] = $id_usuario;
-    $_SESSION["nombre"] = $nombre;
-    $_SESSION["apellido"] = $apellido;
-    $_SESSION["correo"] = $correo;
-    $_SESSION["rol"] = $rol;
-
-    $insertar->close();
-    $conexion->close();
-
-    // Redirigir al panel
-    header("Location: panel.php");
-    exit;
-
-} else {
-
-    $insertar->close();
-    mostrarError("No se pudo registrar el paciente. Verificá los datos e intentá nuevamente.");
-}
-
-?>
+</html>

@@ -5,10 +5,7 @@ session_start();
 
 require_once __DIR__ . "/../../BackEnd/conexion.php";
 
-// ===================================
 // VERIFICAR PERMISOS
-// ===================================
-
 if (
     !isset($_SESSION["id"]) ||
     !isset($_SESSION["rol"]) ||
@@ -18,26 +15,7 @@ if (
     exit;
 }
 
-// ===================================
-// GENERAR TOKEN CSRF
-// ===================================
-
-if (empty($_SESSION["csrf"])) {
-    $_SESSION["csrf"] = bin2hex(random_bytes(32));
-}
-
-// ===================================
-// FUNCIÓN PARA LIMPIAR DATOS
-// ===================================
-
-function limpiar($dato) {
-    return htmlspecialchars((string)$dato, ENT_QUOTES, "UTF-8");
-}
-
-// ===================================
 // OBTENER PACIENTES
-// ===================================
-
 $sql = "SELECT id, nombre, apellido, cedula
         FROM usuarios
         WHERE rol = 'Paciente'
@@ -46,34 +24,11 @@ $sql = "SELECT id, nombre, apellido, cedula
 $resultado = $conexion->query($sql);
 
 if (!$resultado) {
-    die("Error al obtener pacientes.");
+    die("Error al obtener pacientes: " . $conexion->error);
 }
 
-// ===================================
-// OBTENER DOCUMENTOS REGISTRADOS
-// ===================================
-
-$sqlDocumentos = "
-    SELECT
-        d.id_documento,
-        d.id_paciente,
-        d.nombre_documento,
-        d.categoria,
-        d.descripcion,
-        d.tipo_documento,
-        d.fecha_subida,
-        u.nombre,
-        u.apellido,
-        u.cedula
-    FROM documentos_medicos d
-    INNER JOIN usuarios u ON d.id_paciente = u.id
-    ORDER BY d.fecha_subida DESC
-";
-
-$resultadoDocumentos = $conexion->query($sqlDocumentos);
-
-if (!$resultadoDocumentos) {
-    die("Error al obtener los documentos médicos.");
+function limpiar($dato) {
+    return htmlspecialchars((string)$dato, ENT_QUOTES, "UTF-8");
 }
 
 ?>
@@ -86,7 +41,7 @@ if (!$resultadoDocumentos) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>FLEM × Hospital de Clínicas | Documentos médicos</title>
+    <title>FLEM | Documentos médicos</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           rel="stylesheet">
@@ -95,7 +50,7 @@ if (!$resultadoDocumentos) {
 
         :root {
             --verde: #075c45;
-            --verde-oscuro: #064936;
+            --verde-oscuro: #064735;
             --dorado: #d4af37;
             --fondo: #f4f8f6;
         }
@@ -103,18 +58,16 @@ if (!$resultadoDocumentos) {
         body {
             background: var(--fondo);
             min-height: 100vh;
-            color: #26352f;
             font-family: Arial, sans-serif;
+            color: #26352f;
         }
-
-        /* ENCABEZADO */
 
         .navbar-flem {
             background: var(--verde);
             padding: 14px 0;
         }
 
-        .brand-flem {
+        .marca {
             display: flex;
             align-items: center;
             gap: 12px;
@@ -123,31 +76,28 @@ if (!$resultadoDocumentos) {
 
         .brand-name {
             color: var(--dorado);
-            font-size: 24px;
-            font-weight: 800;
+            font-weight: 700;
             letter-spacing: 2px;
+            font-size: 27px;
+            white-space: nowrap;
         }
 
         .brand-x {
             color: var(--dorado);
-            font-size: 27px;
-            font-weight: bold;
         }
 
         .logo-hospital {
-            width: 150px;
-            height: 48px;
+            width: 115px;
+            height: 55px;
             object-fit: contain;
             background: transparent;
+            border: none;
             padding: 0;
         }
 
-        /* CONTENIDO */
-
         .contenedor {
-            max-width: 1200px;
+            max-width: 850px;
             margin: 45px auto;
-            padding: 0 18px;
         }
 
         .documento-card {
@@ -159,7 +109,7 @@ if (!$resultadoDocumentos) {
         .documento-header {
             background: linear-gradient(135deg, var(--verde), #0a7658);
             color: white;
-            padding: 28px;
+            padding: 32px;
         }
 
         .documento-icono {
@@ -170,8 +120,6 @@ if (!$resultadoDocumentos) {
         .gold {
             color: var(--dorado);
         }
-
-        /* FORMULARIOS */
 
         .form-label {
             font-weight: 600;
@@ -188,17 +136,15 @@ if (!$resultadoDocumentos) {
         .form-control:focus,
         .form-select:focus {
             border-color: var(--verde);
-            box-shadow: 0 0 0 .2rem rgba(7,92,69,.12);
+            box-shadow: 0 0 0 0.2rem rgba(7, 92, 69, 0.12);
         }
-
-        /* BOTONES */
 
         .btn-flem {
             background: var(--verde);
             color: white;
             border: none;
             border-radius: 10px;
-            padding: 12px;
+            padding: 13px;
             font-weight: 600;
         }
 
@@ -207,68 +153,19 @@ if (!$resultadoDocumentos) {
             color: white;
         }
 
-        .btn-dorado {
-            background: var(--dorado);
-            color: #26352f;
-            border: none;
-            border-radius: 9px;
-            padding: 10px 16px;
-            font-weight: bold;
-        }
-
-        .btn-dorado:hover {
-            background: #c39d2e;
-            color: #26352f;
-        }
-
         .btn-volver {
             background: #e9efec;
             color: var(--verde);
             border: none;
             border-radius: 9px;
-            padding: 10px 18px;
+            padding: 12px 18px;
             font-weight: 600;
             text-decoration: none;
         }
 
         .btn-volver:hover {
             background: #dce8e2;
-            color: var(--verde);
-        }
-
-        /* TABLA */
-
-        .tabla-card {
-            border: none;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .tabla-titulo {
-            color: var(--verde);
-            font-weight: bold;
-        }
-
-        .tabla-documentos thead th {
-            background: var(--verde);
-            color: white;
-            white-space: nowrap;
-            padding: 14px;
-        }
-
-        .tabla-documentos tbody td {
-            padding: 13px;
-            vertical-align: middle;
-        }
-
-        .categoria {
-            background: #f4e6b7;
-            color: #624d0c;
-            padding: 7px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            display: inline-block;
+            color: var(--verde-oscuro);
         }
 
         .ayuda {
@@ -276,42 +173,55 @@ if (!$resultadoDocumentos) {
             font-size: 13px;
         }
 
-        .sin-documentos {
+        .footer-flem {
+            background: white;
+            border-top: 3px solid var(--dorado);
+            margin-top: 55px;
+            padding: 30px 18px;
+        }
+
+        .footer-title {
             color: var(--verde);
-            font-size: 42px;
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 10px;
         }
 
-        footer {
-            color: #718078;
+        .footer-description {
+            max-width: 800px;
+            margin: auto;
+            color: #66736c;
+            font-size: 14px;
+            line-height: 1.7;
         }
 
-        .footer-brand {
-            color: var(--dorado);
-            font-weight: 800;
-            letter-spacing: 2px;
+        .footer-copy {
+            color: #89938e;
+            font-size: 12px;
+            margin-top: 15px;
         }
 
-        @media(max-width: 600px) {
-
-            .brand-flem {
-                gap: 7px;
-            }
+        @media (max-width: 576px) {
 
             .brand-name {
-                font-size: 18px;
-            }
-
-            .brand-x {
-                font-size: 21px;
+                font-size: 20px;
             }
 
             .logo-hospital {
-                width: 105px;
-                height: 40px;
+                width: 85px;
+                height: 45px;
+            }
+
+            .marca {
+                gap: 7px;
             }
 
             .documento-header {
-                padding: 22px;
+                padding: 23px;
+            }
+
+            .contenedor {
+                margin: 25px auto;
             }
 
         }
@@ -322,21 +232,21 @@ if (!$resultadoDocumentos) {
 
 <body>
 
-    <!-- ENCABEZADO FLEM × HOSPITAL DE CLÍNICAS -->
+    <!-- BARRA SUPERIOR -->
 
     <nav class="navbar navbar-flem">
 
         <div class="container d-flex justify-content-between align-items-center">
 
-            <a href="../../BackEnd/panel.php" class="brand-flem">
+            <a href="../../BackEnd/panel.php" class="marca">
 
-                <span class="brand-name">FLEM</span>
-
-                <span class="brand-x">×</span>
+                <span class="brand-name">
+                    FLEM <span class="brand-x">×</span>
+                </span>
 
                 <img
                     src="../img/logo-hospital-clinicas.png"
-                    alt="Hospital de Clínicas"
+                    alt="Logo Hospital de Clínicas"
                     class="logo-hospital"
                 >
 
@@ -351,32 +261,15 @@ if (!$resultadoDocumentos) {
     </nav>
 
 
+    <!-- CONTENIDO -->
+
     <main class="container">
 
         <div class="contenedor">
 
-            <!-- MENSAJES -->
+            <div class="card documento-card shadow">
 
-            <?php if (isset($_GET["eliminado"])): ?>
-
-                <div class="alert alert-success">
-                    Documento eliminado correctamente.
-                </div>
-
-            <?php endif; ?>
-
-            <?php if (isset($_GET["error"])): ?>
-
-                <div class="alert alert-danger">
-                    No se pudo completar la operación solicitada.
-                </div>
-
-            <?php endif; ?>
-
-
-            <!-- FORMULARIO PARA SUBIR DOCUMENTOS -->
-
-            <div class="card documento-card shadow mb-5">
+                <!-- ENCABEZADO -->
 
                 <div class="documento-header">
 
@@ -399,6 +292,8 @@ if (!$resultadoDocumentos) {
                 </div>
 
 
+                <!-- FORMULARIO -->
+
                 <div class="card-body p-4 p-md-5">
 
                     <h4 class="fw-bold mb-2">
@@ -414,8 +309,8 @@ if (!$resultadoDocumentos) {
                     <form
                         action="../../BackEnd/DocumentosMedicos/subirDocumentos.php"
                         method="POST"
-                        enctype="multipart/form-data"
-                    >
+                        enctype="multipart/form-data">
+
 
                         <!-- PACIENTE -->
 
@@ -428,14 +323,13 @@ if (!$resultadoDocumentos) {
                             <select
                                 name="id_paciente"
                                 class="form-select"
-                                required
-                            >
+                                required>
 
                                 <option value="">
                                     Seleccionar paciente
                                 </option>
 
-                                <?php while ($paciente = $resultado->fetch_assoc()): ?>
+                                <?php while ($paciente = $resultado->fetch_assoc()) { ?>
 
                                     <option value="<?= (int)$paciente["id"] ?>">
 
@@ -448,14 +342,14 @@ if (!$resultadoDocumentos) {
 
                                     </option>
 
-                                <?php endwhile; ?>
+                                <?php } ?>
 
                             </select>
 
                         </div>
 
 
-                        <!-- NOMBRE -->
+                        <!-- NOMBRE DEL DOCUMENTO -->
 
                         <div class="mb-4">
 
@@ -469,13 +363,12 @@ if (!$resultadoDocumentos) {
                                 class="form-control"
                                 maxlength="200"
                                 placeholder="Ej: Análisis de sangre"
-                                required
-                            >
+                                required>
 
                         </div>
 
 
-                        <!-- CATEGORÍA -->
+                        <!-- CATEGORIA -->
 
                         <div class="mb-4">
 
@@ -486,8 +379,7 @@ if (!$resultadoDocumentos) {
                             <select
                                 name="categoria"
                                 class="form-select"
-                                required
-                            >
+                                required>
 
                                 <option value="">
                                     Seleccionar categoría
@@ -518,7 +410,7 @@ if (!$resultadoDocumentos) {
                         </div>
 
 
-                        <!-- DESCRIPCIÓN -->
+                        <!-- DESCRIPCION -->
 
                         <div class="mb-4">
 
@@ -530,8 +422,7 @@ if (!$resultadoDocumentos) {
                                 name="descripcion"
                                 class="form-control"
                                 rows="4"
-                                placeholder="Agregá información sobre el documento..."
-                            ></textarea>
+                                placeholder="Agregá información sobre el documento..."></textarea>
 
                         </div>
 
@@ -549,8 +440,7 @@ if (!$resultadoDocumentos) {
                                 name="documento"
                                 class="form-control"
                                 accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx"
-                                required
-                            >
+                                required>
 
                             <div class="ayuda mt-2">
                                 Formatos permitidos: PDF, JPG, PNG,
@@ -566,189 +456,23 @@ if (!$resultadoDocumentos) {
 
                             <button
                                 type="submit"
-                                class="btn btn-flem"
-                            >
+                                class="btn btn-flem">
+
                                 Subir documento médico
+
                             </button>
 
                             <a
                                 href="../../BackEnd/panel.php"
-                                class="btn btn-volver text-center"
-                            >
+                                class="btn btn-volver text-center">
+
                                 ← Volver al panel administrativo
+
                             </a>
 
                         </div>
 
                     </form>
-
-                </div>
-
-            </div>
-
-
-            <!-- LISTADO DE DOCUMENTOS -->
-
-            <div class="card tabla-card shadow">
-
-                <div class="card-body p-4">
-
-                    <h4 class="tabla-titulo mb-4">
-                        Documentos médicos registrados
-                    </h4>
-
-                    <?php if ($resultadoDocumentos->num_rows > 0): ?>
-
-                        <div class="table-responsive">
-
-                            <table class="table table-hover tabla-documentos">
-
-                                <thead>
-
-                                    <tr>
-
-                                        <th>Documento</th>
-
-                                        <th>Paciente</th>
-
-                                        <th>Cédula</th>
-
-                                        <th>Categoría</th>
-
-                                        <th>Fecha</th>
-
-                                        <th>Formato</th>
-
-                                        <th>Acciones</th>
-
-                                    </tr>
-
-                                </thead>
-
-                                <tbody>
-
-                                    <?php while ($documento = $resultadoDocumentos->fetch_assoc()): ?>
-
-                                        <tr>
-
-                                            <td class="fw-semibold">
-
-                                                <?= limpiar($documento["nombre_documento"]) ?>
-
-                                            </td>
-
-                                            <td>
-
-                                                <?= limpiar(
-                                                    $documento["nombre"] . " " .
-                                                    $documento["apellido"]
-                                                ) ?>
-
-                                            </td>
-
-                                            <td>
-
-                                                <?= limpiar($documento["cedula"]) ?>
-
-                                            </td>
-
-                                            <td>
-
-                                                <span class="categoria">
-                                                    <?= limpiar($documento["categoria"]) ?>
-                                                </span>
-
-                                            </td>
-
-                                            <td>
-
-                                                <?= limpiar($documento["fecha_subida"]) ?>
-
-                                            </td>
-
-                                            <td>
-
-                                                <?= limpiar($documento["tipo_documento"]) ?>
-
-                                            </td>
-
-                                            <td>
-
-                                                <div class="d-flex gap-2 flex-wrap">
-
-                                                    <!-- DESCARGAR -->
-
-                                                    <a
-                                                        href="../../BackEnd/DocumentosMedicos/descargarDocumento.php?id=<?= (int)$documento["id_documento"] ?>"
-                                                        class="btn btn-flem btn-sm"
-                                                    >
-                                                        Descargar
-                                                    </a>
-
-
-                                                    <!-- ELIMINAR -->
-
-                                                    <form
-                                                        method="POST"
-                                                        action="../../BackEnd/DocumentosMedicos/eliminarDocumento.php"
-                                                        onsubmit="return confirm('¿Seguro que querés eliminar este documento médico?');"
-                                                    >
-
-                                                        <input
-                                                            type="hidden"
-                                                            name="id_documento"
-                                                            value="<?= (int)$documento["id_documento"] ?>"
-                                                        >
-
-                                                        <input
-                                                            type="hidden"
-                                                            name="csrf"
-                                                            value="<?= limpiar($_SESSION["csrf"]) ?>"
-                                                        >
-
-                                                        <button
-                                                            type="submit"
-                                                            class="btn btn-danger btn-sm"
-                                                        >
-                                                            Eliminar
-                                                        </button>
-
-                                                    </form>
-
-                                                </div>
-
-                                            </td>
-
-                                        </tr>
-
-                                    <?php endwhile; ?>
-
-                                </tbody>
-
-                            </table>
-
-                        </div>
-
-                    <?php else: ?>
-
-                        <div class="text-center py-5">
-
-                            <div class="sin-documentos">
-                                ▣
-                            </div>
-
-                            <h5 class="mt-3">
-                                No hay documentos registrados
-                            </h5>
-
-                            <p class="text-secondary mb-0">
-                                Cuando se carguen documentos médicos,
-                                aparecerán en esta sección.
-                            </p>
-
-                        </div>
-
-                    <?php endif; ?>
 
                 </div>
 
@@ -761,27 +485,26 @@ if (!$resultadoDocumentos) {
 
     <!-- PIE DE PÁGINA -->
 
-    <footer class="text-center py-4">
+    <footer class="footer-flem text-center">
 
-        <div class="footer-brand">
+        <div class="footer-title">
             FLEM × Hospital de Clínicas
         </div>
 
-        <div>Sistema Hospitalario</div>
+        <p class="footer-description">
+            Somos una empresa especializada en la digitalización de servicios mediante el desarrollo de páginas web y soluciones tecnológicas. Nuestro objetivo es optimizar procesos, facilitar el acceso a la información y mejorar la gestión de las organizaciones mediante herramientas modernas, accesibles y eficientes.
+        </p>
+
+        <div class="footer-copy">
+            © <?= date("Y"); ?> FLEM. Todos los derechos reservados.
+        </div>
 
     </footer>
 
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
-
 </html>
 
 <?php
-
 $resultado->free();
-$resultadoDocumentos->free();
 $conexion->close();
-
 ?>

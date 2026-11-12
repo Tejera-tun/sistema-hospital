@@ -311,7 +311,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
     } catch (Exception $e) {
-
         $error = $e->getMessage();
     }
 }
@@ -364,16 +363,15 @@ $totalUsuarios = $resultado->num_rows;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>FLEM × Hospital de Clínicas | Gestión de usuarios</title>
+    <title>FLEM | Gestión de usuarios</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
     <style>
-
         :root {
             --verde: #075c45;
-            --verde-oscuro: #064936;
+            --verde-oscuro: #064735;
             --dorado: #d4af37;
             --fondo: #f4f8f6;
         }
@@ -384,42 +382,39 @@ $totalUsuarios = $resultado->num_rows;
             font-family: Arial, sans-serif;
         }
 
-        /* ENCABEZADO FLEM × HOSPITAL */
-
         .navbar-flem {
             background: var(--verde);
             padding: 14px 0;
         }
 
-        .brand-flem {
+        .marca {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             text-decoration: none;
         }
 
         .brand-name {
             color: var(--dorado);
-            font-size: 24px;
-            font-weight: 800;
+            font-weight: 700;
             letter-spacing: 2px;
+            font-size: 27px;
+            white-space: nowrap;
         }
 
-        .brand-x {
+        .cruz {
             color: var(--dorado);
-            font-size: 27px;
-            font-weight: bold;
         }
 
         .logo-hospital {
-            width: 150px;
-            height: 48px;
+            display: block;
+            width: 115px;
+            height: 55px;
             object-fit: contain;
             background: transparent;
+            border: 0;
             padding: 0;
         }
-
-        /* CONTENIDO */
 
         .contenedor {
             max-width: 1200px;
@@ -478,7 +473,7 @@ $totalUsuarios = $resultado->num_rows;
 
         .form-control:focus,
         .form-select:focus {
-            border-color: var(--verde);
+            border-color: #08775a;
             box-shadow: 0 0 0 .2rem rgba(8,119,90,.12);
         }
 
@@ -492,37 +487,48 @@ $totalUsuarios = $resultado->num_rows;
             color: var(--verde);
         }
 
-        footer {
-            color: #6c757d;
-        }
-
         .footer-flem {
-            color: var(--dorado);
-            font-weight: bold;
-            letter-spacing: 2px;
+            background: #fff;
+            border-top: 3px solid var(--dorado);
+            margin-top: 55px;
+            padding: 30px 18px;
         }
 
-        @media (max-width: 500px) {
+        .footer-title {
+            color: var(--verde);
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
 
-            .brand-flem {
-                gap: 7px;
-            }
+        .footer-description {
+            max-width: 800px;
+            margin: 0 auto;
+            color: #66736c;
+            font-size: 14px;
+            line-height: 1.7;
+        }
 
+        .footer-copy {
+            color: #89938e;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 576px) {
             .brand-name {
-                font-size: 18px;
-            }
-
-            .brand-x {
                 font-size: 21px;
             }
 
             .logo-hospital {
-                width: 105px;
-                height: 40px;
+                width: 85px;
+                height: 45px;
             }
 
+            .marca {
+                gap: 9px;
+            }
         }
-
     </style>
 
 </head>
@@ -532,21 +538,14 @@ $totalUsuarios = $resultado->num_rows;
     <!-- ENCABEZADO -->
 
     <nav class="navbar navbar-flem">
+        <div class="container d-flex justify-content-between align-items-center">
 
-        <div class="container">
+            <a href="../panel.php" class="marca">
+                <span class="brand-name">FLEM <span class="cruz">×</span></span>
 
-            <a href="../panel.php" class="brand-flem">
-
-                <span class="brand-name">FLEM</span>
-
-                <span class="brand-x">×</span>
-
-                <img
-                    src="../../FrontEnd/img/logo-hospital-clinicas.png"
-                    alt="Hospital de Clínicas"
-                    class="logo-hospital"
-                >
-
+                <img src="../../FrontEnd/img/logo-hospital-clinicas.png"
+                     alt="Logo Hospital de Clínicas"
+                     class="logo-hospital">
             </a>
 
             <a href="../logout.php" class="btn btn-light">
@@ -554,15 +553,13 @@ $totalUsuarios = $resultado->num_rows;
             </a>
 
         </div>
-
     </nav>
 
     <main class="contenedor">
 
-        <!-- ENCABEZADO DE LA PÁGINA -->
+        <!-- ENCABEZADO DE PÁGINA -->
 
         <div class="card welcome-card shadow">
-
             <div class="card-body p-4 p-md-5">
 
                 <p class="gold fw-semibold mb-2">
@@ -574,59 +571,43 @@ $totalUsuarios = $resultado->num_rows;
                 </h1>
 
                 <p class="mb-0">
-                    Administrá los usuarios registrados en FLEM × Hospital de Clínicas.
+                    Administrá los usuarios registrados en FLEM.
                 </p>
 
             </div>
-
         </div>
 
         <!-- VOLVER -->
 
         <div class="mb-4">
-
             <a href="../panel.php" class="btn btn-secondary">
                 ← Volver al panel
             </a>
-
         </div>
 
         <!-- MENSAJES -->
 
         <?php if ($mensaje !== ""): ?>
-
             <div class="alert alert-success alert-dismissible fade show">
-
                 <?= limpiarDato($mensaje) ?>
-
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-
             </div>
-
         <?php endif; ?>
 
         <?php if ($error !== ""): ?>
-
             <div class="alert alert-danger alert-dismissible fade show">
-
                 <?= limpiarDato($error) ?>
-
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-
             </div>
-
         <?php endif; ?>
 
         <!-- FORMULARIO -->
 
         <div class="card usuarios-card shadow-sm mb-4">
-
             <div class="card-body p-4 p-md-5">
 
                 <h4 class="fw-bold usuarios-titulo mb-4">
-
                     <?= $editar ? "Modificar usuario" : "Agregar usuario" ?>
-
                 </h4>
 
                 <form method="POST" action="gestionUsuarios.php">
@@ -638,94 +619,70 @@ $totalUsuarios = $resultado->num_rows;
                            value="<?= $editar ? "modificar" : "agregar" ?>">
 
                     <?php if ($editar): ?>
-
                         <input type="hidden" name="id"
                                value="<?= (int)$editar["id"] ?>">
-
                     <?php endif; ?>
 
                     <div class="row g-3">
 
                         <div class="col-md-6">
-
                             <label class="form-label fw-semibold">Nombre</label>
-
                             <input type="text" name="nombre"
                                    class="form-control"
                                    value="<?= limpiarDato($editar["nombre"] ?? "") ?>"
                                    required>
-
                         </div>
 
                         <div class="col-md-6">
-
                             <label class="form-label fw-semibold">Apellido</label>
-
                             <input type="text" name="apellido"
                                    class="form-control"
                                    value="<?= limpiarDato($editar["apellido"] ?? "") ?>"
                                    required>
-
                         </div>
 
                         <div class="col-md-6">
-
                             <label class="form-label fw-semibold">Cédula</label>
-
                             <input type="text" name="cedula"
                                    class="form-control"
                                    value="<?= limpiarDato($editar["cedula"] ?? "") ?>"
                                    required>
-
                         </div>
 
                         <div class="col-md-6">
-
                             <label class="form-label fw-semibold">Edad</label>
-
                             <input type="number" name="edad"
                                    class="form-control"
                                    min="1" max="120"
                                    value="<?= limpiarDato($editar["edad"] ?? "") ?>"
                                    required>
-
                         </div>
 
                         <div class="col-md-6">
-
                             <label class="form-label fw-semibold">Teléfono</label>
-
                             <input type="text" name="telefono"
                                    class="form-control"
                                    value="<?= limpiarDato($editar["telefono"] ?? "") ?>"
                                    required>
-
                         </div>
 
                         <div class="col-md-6">
-
                             <label class="form-label fw-semibold">Correo electrónico</label>
-
                             <input type="email" name="correo"
                                    class="form-control"
                                    value="<?= limpiarDato($editar["correo"] ?? "") ?>"
                                    required>
-
                         </div>
 
                         <div class="col-md-6">
-
                             <label class="form-label fw-semibold">Contraseña</label>
-
                             <input type="password" name="password"
                                    class="form-control"
                                    <?= $editar ? "" : "required" ?>
                                    placeholder="<?= $editar ? "Dejar vacío para mantener la actual" : "Ingresar contraseña" ?>">
-
                         </div>
 
                         <div class="col-md-6">
-
                             <label class="form-label fw-semibold">Rol</label>
 
                             <select name="rol" class="form-select" required>
@@ -741,7 +698,6 @@ $totalUsuarios = $resultado->num_rows;
                                 </option>
 
                             </select>
-
                         </div>
 
                     </div>
@@ -749,17 +705,13 @@ $totalUsuarios = $resultado->num_rows;
                     <div class="mt-4 d-flex gap-2 flex-wrap">
 
                         <button type="submit" class="btn btn-flem px-4">
-
                             <?= $editar ? "Guardar cambios" : "+ Agregar usuario" ?>
-
                         </button>
 
                         <?php if ($editar): ?>
-
                             <a href="gestionUsuarios.php" class="btn btn-secondary">
                                 Cancelar
                             </a>
-
                         <?php endif; ?>
 
                     </div>
@@ -767,13 +719,11 @@ $totalUsuarios = $resultado->num_rows;
                 </form>
 
             </div>
-
         </div>
 
         <!-- TABLA DE USUARIOS -->
 
         <div class="card usuarios-card shadow-sm">
-
             <div class="card-body p-4">
 
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
@@ -793,7 +743,6 @@ $totalUsuarios = $resultado->num_rows;
                     <table class="table table-bordered table-hover usuarios-tabla">
 
                         <thead>
-
                             <tr>
                                 <th>ID</th>
                                 <th>Nombre</th>
@@ -805,7 +754,6 @@ $totalUsuarios = $resultado->num_rows;
                                 <th>Rol</th>
                                 <th>Acciones</th>
                             </tr>
-
                         </thead>
 
                         <tbody>
@@ -815,27 +763,17 @@ $totalUsuarios = $resultado->num_rows;
                                 <tr>
 
                                     <td><?= (int)$usuario["id"] ?></td>
-
                                     <td><?= limpiarDato($usuario["nombre"]) ?></td>
-
                                     <td><?= limpiarDato($usuario["apellido"]) ?></td>
-
                                     <td><?= limpiarDato($usuario["cedula"]) ?></td>
-
                                     <td><?= (int)$usuario["edad"] ?></td>
-
                                     <td><?= limpiarDato($usuario["telefono"]) ?></td>
-
                                     <td><?= limpiarDato($usuario["correo"]) ?></td>
 
                                     <td>
-
                                         <span class="badge <?= $usuario["rol"] === "Administrador" ? "role-admin" : "role-paciente" ?>">
-
                                             <?= limpiarDato($usuario["rol"]) ?>
-
                                         </span>
-
                                     </td>
 
                                     <td>
@@ -877,31 +815,34 @@ $totalUsuarios = $resultado->num_rows;
                     </table>
 
                 </div>
-
             </div>
-
         </div>
 
     </main>
 
     <!-- PIE DE PÁGINA -->
 
-    <footer class="text-center py-4">
+    <footer class="footer-flem text-center">
 
-        <div class="footer-flem">FLEM × Hospital de Clínicas</div>
+        <div class="footer-title">
+            FLEM × Hospital de Clínicas
+        </div>
 
-        <div>Sistema Hospitalario</div>
+        <p class="footer-description">
+            Somos una empresa especializada en la digitalización de servicios mediante el desarrollo de páginas web y soluciones tecnológicas. Nuestro objetivo es optimizar procesos, facilitar el acceso a la información y mejorar la gestión de las organizaciones mediante herramientas modernas, accesibles y eficientes.
+        </p>
+
+        <div class="footer-copy">
+            © <?= date("Y"); ?> FLEM. Todos los derechos reservados.
+        </div>
 
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
-
 </html>
 
 <?php
-
 $conexion->close();
-
 ?>

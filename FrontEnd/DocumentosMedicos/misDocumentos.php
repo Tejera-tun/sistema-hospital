@@ -4,7 +4,6 @@ session_start();
 
 require_once __DIR__ . "/../../BackEnd/conexion.php";
 
-// Verificar que haya iniciado sesión como paciente
 if (!isset($_SESSION["id"]) || $_SESSION["rol"] !== "Paciente") {
     header("Location: ../../BackEnd/login.php");
     exit;
@@ -27,7 +26,9 @@ $resultado = $stmt->get_result();
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -36,6 +37,7 @@ $resultado = $stmt->get_result();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
+
         :root {
             --verde: #075c45;
             --verde-oscuro: #064735;
@@ -47,47 +49,40 @@ $resultado = $stmt->get_result();
             background: var(--fondo);
             font-family: Arial, sans-serif;
             color: #26352f;
+            min-height: 100vh;
         }
 
         .navbar-flem {
             background: var(--verde);
-            padding: 13px 0;
+            padding: 14px 0;
         }
 
         .marca {
             display: flex;
             align-items: center;
-            gap: 13px;
+            gap: 12px;
             text-decoration: none;
         }
 
-        .logo-hospital {
-            width: 48px;
-            height: 48px;
-            object-fit: contain;
-        }
-
-        .marca-texto {
-            font-size: 23px;
+        .brand-name {
+            color: var(--dorado);
+            font-size: 27px;
             font-weight: bold;
             letter-spacing: 2px;
-            color: white;
+            white-space: nowrap;
         }
 
-        .marca-texto .flem {
+        .brand-x {
             color: var(--dorado);
         }
 
-        .marca-texto .cruz {
-            color: var(--dorado);
-            margin: 0 3px;
-        }
-
-        .marca-texto .hospital {
-            font-size: 12px;
-            display: block;
-            letter-spacing: 1px;
-            font-weight: normal;
+        .logo-hospital {
+            width: 115px;
+            height: 55px;
+            object-fit: contain;
+            background: transparent;
+            border: none;
+            padding: 0;
         }
 
         .contenedor {
@@ -131,12 +126,12 @@ $resultado = $stmt->get_result();
             padding: 9px 16px;
             text-decoration: none;
             display: inline-block;
-            font-weight: bold;
+            font-weight: 600;
         }
 
         .btn-volver:hover {
             background: #e8f1ed;
-            color: var(--verde-oscuro);
+            color: var(--verde);
         }
 
         .btn-descargar {
@@ -148,7 +143,6 @@ $resultado = $stmt->get_result();
             text-decoration: none;
             display: inline-block;
             font-size: 14px;
-            font-weight: bold;
             white-space: nowrap;
         }
 
@@ -176,171 +170,237 @@ $resultado = $stmt->get_result();
             border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
-            white-space: nowrap;
+            display: inline-block;
         }
 
         .titulo-seccion {
+            color: var(--verde);
             font-weight: bold;
             margin-bottom: 20px;
-            color: var(--verde);
         }
 
-        .vacio-icono {
-            font-size: 45px;
-            color: var(--dorado);
+        .footer-flem {
+            background: white;
+            border-top: 3px solid var(--dorado);
+            margin-top: 55px;
+            padding: 30px 18px;
+        }
+
+        .footer-title {
+            color: var(--verde);
+            font-size: 19px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .footer-description {
+            max-width: 800px;
+            margin: auto;
+            color: #66736c;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .footer-copy {
+            color: #89938e;
+            font-size: 12px;
+            margin-top: 15px;
         }
 
         @media (max-width: 600px) {
+
             .encabezado {
                 padding: 22px;
             }
 
+            .brand-name {
+                font-size: 20px;
+            }
+
             .logo-hospital {
-                width: 38px;
-                height: 38px;
+                width: 85px;
+                height: 45px;
             }
 
-            .marca-texto {
-                font-size: 19px;
+            .marca {
+                gap: 7px;
             }
 
-            .marca-texto .hospital {
-                font-size: 10px;
-            }
-
-            .btn-volver {
-                padding: 8px 10px;
-                font-size: 13px;
-            }
-
-            .tarjeta {
-                padding: 16px;
-            }
         }
+
     </style>
+
 </head>
 
 <body>
 
-<nav class="navbar-flem">
-    <div class="container d-flex justify-content-between align-items-center">
+    <!-- ENCABEZADO -->
 
-        <a href="../../BackEnd/panel.php" class="marca">
-            <img
-                src="../img/logo-hospital-clinicas.png"
-                alt="Logo Hospital de Clínicas"
-                class="logo-hospital"
-            >
+    <nav class="navbar navbar-flem">
 
-            <span class="marca-texto">
-                <span class="flem">FLEM</span><span class="cruz">×</span>
-                <span class="hospital">HOSPITAL DE CLÍNICAS</span>
-            </span>
-        </a>
+        <div class="container d-flex justify-content-between align-items-center">
 
-        <a href="../../BackEnd/panel.php" class="btn-volver">
-            Volver al panel
-        </a>
+            <a href="../../BackEnd/panel.php" class="marca">
 
-    </div>
-</nav>
+                <span class="brand-name">
+                    FLEM <span class="brand-x">×</span>
+                </span>
 
-<div class="contenedor">
+                <img
+                    src="../img/logo-hospital-clinicas.png"
+                    alt="Logo Hospital de Clínicas"
+                    class="logo-hospital"
+                >
 
-    <div class="encabezado">
-        <small>SISTEMA HOSPITALARIO</small>
+            </a>
 
-        <h1>Mis documentos médicos</h1>
+            <a href="../../BackEnd/panel.php" class="btn-volver">
+                Volver al panel
+            </a>
 
-        <p class="mb-0">
-            Consultá y descargá tus documentos médicos personales
-            de forma sencilla y segura.
-        </p>
-    </div>
+        </div>
 
-    <div class="tarjeta">
+    </nav>
 
-        <h4 class="titulo-seccion">Mis documentos</h4>
 
-        <?php if ($resultado->num_rows > 0): ?>
+    <!-- CONTENIDO PRINCIPAL -->
 
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+    <main class="contenedor">
 
-                    <thead>
-                        <tr>
-                            <th>Documento</th>
-                            <th>Categoría</th>
-                            <th>Descripción</th>
-                            <th>Tipo</th>
-                            <th>Fecha</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
+        <div class="encabezado">
 
-                    <tbody>
+            <small>SISTEMA HOSPITALARIO</small>
 
-                        <?php while ($documento = $resultado->fetch_assoc()): ?>
+            <h1>Mis documentos médicos</h1>
+
+            <p class="mb-0">
+                Consultá y descargá tus documentos médicos personales.
+            </p>
+
+        </div>
+
+
+        <!-- TABLA DE DOCUMENTOS -->
+
+        <div class="tarjeta">
+
+            <h4 class="titulo-seccion">
+                Mis documentos
+            </h4>
+
+            <?php if ($resultado->num_rows > 0): ?>
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead>
 
                             <tr>
-                                <td class="fw-semibold">
-                                    <?= htmlspecialchars($documento["nombre_documento"]) ?>
-                                </td>
-
-                                <td>
-                                    <?= htmlspecialchars($documento["categoria"]) ?>
-                                </td>
-
-                                <td>
-                                    <?= htmlspecialchars($documento["descripcion"] ?? "") ?>
-                                </td>
-
-                                <td>
-                                    <span class="tipo-documento">
-                                        <?= htmlspecialchars($documento["tipo_documento"]) ?>
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <?= htmlspecialchars($documento["fecha_subida"]) ?>
-                                </td>
-
-                                <td>
-                                    <a
-                                        href="../../BackEnd/DocumentosMedicos/descargarDocumento.php?id=<?= (int) $documento["id_documento"] ?>"
-                                        class="btn-descargar">
-                                        ↓ Descargar
-                                    </a>
-                                </td>
+                                <th>Documento</th>
+                                <th>Categoría</th>
+                                <th>Descripción</th>
+                                <th>Tipo</th>
+                                <th>Fecha</th>
+                                <th>Acción</th>
                             </tr>
 
-                        <?php endwhile; ?>
+                        </thead>
 
-                    </tbody>
+                        <tbody>
 
-                </table>
-            </div>
+                            <?php while ($documento = $resultado->fetch_assoc()): ?>
 
-        <?php else: ?>
+                                <tr>
 
-            <div class="text-center py-5">
+                                    <td class="fw-semibold">
+                                        <?= htmlspecialchars($documento["nombre_documento"]) ?>
+                                    </td>
 
-                <div class="vacio-icono">▤</div>
+                                    <td>
+                                        <?= htmlspecialchars($documento["categoria"]) ?>
+                                    </td>
 
-                <h5 class="mt-3">Todavía no tenés documentos médicos</h5>
+                                    <td>
+                                        <?= htmlspecialchars($documento["descripcion"] ?? "") ?>
+                                    </td>
 
-                <p class="text-muted mb-0">
-                    Cuando el hospital cargue tus documentos,
-                    aparecerán aquí automáticamente.
-                </p>
+                                    <td>
 
-            </div>
+                                        <span class="tipo-documento">
+                                            <?= htmlspecialchars($documento["tipo_documento"]) ?>
+                                        </span>
 
-        <?php endif; ?>
+                                    </td>
 
-    </div>
+                                    <td>
+                                        <?= htmlspecialchars($documento["fecha_subida"]) ?>
+                                    </td>
 
-</div>
+                                    <td>
+
+                                        <a
+                                            href="../../BackEnd/DocumentosMedicos/descargarDocumento.php?id=<?= (int) $documento["id_documento"] ?>"
+                                            class="btn-descargar">
+
+                                            ↓ Descargar
+
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+                            <?php endwhile; ?>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            <?php else: ?>
+
+                <div class="text-center py-5">
+
+                    <div style="font-size: 45px; color: #c49b29;">
+                        ▤
+                    </div>
+
+                    <h5 class="mt-3">
+                        Todavía no tenés documentos médicos
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        Cuando el hospital cargue tus documentos, aparecerán aquí.
+                    </p>
+
+                </div>
+
+            <?php endif; ?>
+
+        </div>
+
+    </main>
+
+
+    <!-- PIE DE PÁGINA -->
+
+    <footer class="footer-flem text-center">
+
+        <div class="footer-title">
+            FLEM × Hospital de Clínicas
+        </div>
+
+        <p class="footer-description">
+            Somos una empresa especializada en la digitalización de servicios mediante el desarrollo de páginas web y soluciones tecnológicas. Nuestro objetivo es optimizar procesos, facilitar el acceso a la información y mejorar la gestión de las organizaciones mediante herramientas modernas, accesibles y eficientes.
+        </p>
+
+        <div class="footer-copy">
+            © <?= date("Y"); ?> FLEM. Todos los derechos reservados.
+        </div>
+
+    </footer>
 
 </body>
 </html>
