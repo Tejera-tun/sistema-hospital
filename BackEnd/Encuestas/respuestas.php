@@ -7,34 +7,40 @@ if (
     !isset($_SESSION["id"]) ||
     ($_SESSION["rol"] ?? "") !== "Paciente"
 ) {
-    header("Location: ../FrontEnd/login.html");
+    header("Location: ../../FrontEnd/login.html");
     exit;
 }
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    header("Location: ../FrontEnd/encuesta.php");
+    header("Location: ../../FrontEnd/encuesta.php");
     exit;
 }
 
+// CONEXIÓN A LA BASE DE DATOS DE ENCUESTAS
 require_once __DIR__ . "/conexion_encuestas.php";
 
+// FUNCIÓN PARA MOSTRAR EL RESULTADO
 function mostrarResultado($titulo, $mensaje, $exito = true)
 {
     $color = $exito ? "#075c45" : "#b02a37";
     $fondo = $exito ? "#e4f2e9" : "#f8d7da";
     ?>
+
     <!DOCTYPE html>
     <html lang="es">
+
     <head>
+
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title><?= htmlspecialchars($titulo) ?> | FLEM</title>
+        <title><?= htmlspecialchars($titulo, ENT_QUOTES, "UTF-8") ?> | FLEM</title>
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
               rel="stylesheet">
 
         <style>
+
             :root {
                 --verde: #075c45;
                 --dorado: #d4af37;
@@ -146,6 +152,7 @@ function mostrarResultado($titulo, $mensaje, $exito = true)
             }
 
             @media (max-width: 500px) {
+
                 .logo {
                     width: 38px;
                     height: 38px;
@@ -162,19 +169,23 @@ function mostrarResultado($titulo, $mensaje, $exito = true)
                 .tarjeta {
                     padding: 30px 20px;
                 }
+
             }
+
         </style>
+
     </head>
 
     <body>
 
         <nav class="navbar-flem">
+
             <div class="container">
 
-                <a href="../FrontEnd/login.html" class="marca">
+                <a href="../../FrontEnd/login.html" class="marca">
 
                     <img
-                        src="../FrontEnd/img/logo-hospital-clinicas.png"
+                        src="../../FrontEnd/img/logo-hospital-clinicas.png"
                         alt="Hospital de Clínicas"
                         class="logo"
                     >
@@ -187,6 +198,7 @@ function mostrarResultado($titulo, $mensaje, $exito = true)
                 </a>
 
             </div>
+
         </nav>
 
         <main class="contenedor">
@@ -197,13 +209,12 @@ function mostrarResultado($titulo, $mensaje, $exito = true)
                     <?= $exito ? "✓" : "!" ?>
                 </div>
 
-                <h1><?= htmlspecialchars($titulo) ?></h1>
+                <h1><?= htmlspecialchars($titulo, ENT_QUOTES, "UTF-8") ?></h1>
 
                 <p class="mensaje">
-                    <?= htmlspecialchars($mensaje) ?>
+                    <?= htmlspecialchars($mensaje, ENT_QUOTES, "UTF-8") ?>
                 </p>
 
-                <!-- RUTA CORREGIDA -->
                 <a href="../panel.php" class="btn-flem">
                     Volver al panel
                 </a>
@@ -213,12 +224,16 @@ function mostrarResultado($titulo, $mensaje, $exito = true)
         </main>
 
     </body>
+
     </html>
+
     <?php
     exit;
 }
 
-// Validar identificador de encuesta
+
+// VALIDAR IDENTIFICADOR DE ENCUESTA
+
 if (
     !isset($_POST["id_encuesta"]) ||
     !filter_var($_POST["id_encuesta"], FILTER_VALIDATE_INT)
@@ -231,11 +246,15 @@ if (
 }
 
 $id_encuesta = (int) $_POST["id_encuesta"];
+
+// IDENTIFICADOR DEL PACIENTE QUE INICIÓ SESIÓN
 $id_usuario = (int) $_SESSION["id"];
+
 
 try {
 
-    // Comprobar que la encuesta exista y esté activa
+    // COMPROBAR QUE LA ENCUESTA EXISTA Y ESTÉ ACTIVA
+
     $stmt = $conexion->prepare(
         "SELECT id_encuesta
          FROM encuestas
@@ -247,13 +266,16 @@ try {
     $stmt->execute();
 
     $encuesta = $stmt->get_result()->fetch_assoc();
+
     $stmt->close();
 
     if (!$encuesta) {
         throw new Exception("La encuesta no está disponible.");
     }
 
-    // Obtener las preguntas de la encuesta
+
+    // OBTENER LAS PREGUNTAS DE LA ENCUESTA
+
     $stmt = $conexion->prepare(
         "SELECT id_pregunta
          FROM preguntas
@@ -278,9 +300,12 @@ try {
         throw new Exception("La encuesta todavía no tiene preguntas.");
     }
 
+
     $respuestas = [];
 
-    // Validar cada respuesta antes de guardarla
+
+    // VALIDAR CADA RESPUESTA ANTES DE GUARDARLA
+
     foreach ($lista_preguntas as $id_pregunta) {
 
         $nombre_campo = "pregunta_" . $id_pregunta;
@@ -305,7 +330,9 @@ try {
         $id_opcion = null;
         $respuesta_texto = null;
 
-        // Comprobar si el valor corresponde a una opción existente
+
+        // COMPROBAR SI EL VALOR CORRESPONDE A UNA OPCIÓN EXISTENTE
+
         if (ctype_digit($valor)) {
 
             $posible_opcion = (int) $valor;
@@ -330,10 +357,13 @@ try {
             $check->close();
 
             if ($opcion) {
+
                 $id_opcion = $posible_opcion;
+
             } else {
-                // Si no es una opción válida, se interpreta como texto
+
                 $respuesta_texto = $valor;
+
             }
 
         } else {
@@ -342,7 +372,9 @@ try {
 
         }
 
-        // Si la pregunta tiene opciones, debe seleccionarse una
+
+        // COMPROBAR SI LA PREGUNTA TIENE OPCIONES
+
         $check = $conexion->prepare(
             "SELECT COUNT(*) AS total
              FROM opciones
@@ -356,26 +388,35 @@ try {
 
         $check->close();
 
+
         if ($total_opciones > 0 && $id_opcion === null) {
+
             throw new Exception(
                 "Una de las respuestas seleccionadas no es válida."
             );
+
         }
 
         if ($total_opciones === 0 && $respuesta_texto === null) {
+
             throw new Exception(
                 "Debés escribir una respuesta para todas las preguntas."
             );
+
         }
+
 
         $respuestas[] = [
             "id_pregunta" => $id_pregunta,
             "id_opcion" => $id_opcion,
             "respuesta_texto" => $respuesta_texto
         ];
+
     }
 
-    // Guardar todas las respuestas en una transacción
+
+    // GUARDAR TODAS LAS RESPUESTAS EN UNA TRANSACCIÓN
+
     $conexion->begin_transaction();
 
     $insert = $conexion->prepare(
@@ -383,6 +424,7 @@ try {
          (id_usuario, id_pregunta, id_opcion, respuesta_texto)
          VALUES (?, ?, ?, ?)"
     );
+
 
     foreach ($respuestas as $respuesta) {
 
@@ -399,17 +441,23 @@ try {
         );
 
         $insert->execute();
+
     }
+
 
     $insert->close();
 
     $conexion->commit();
     $conexion->close();
 
+
+    // MENSAJE DE ÉXITO
+
     mostrarResultado(
         "¡Gracias por responder!",
         "Tus respuestas fueron registradas correctamente. Tu opinión nos ayuda a mejorar la atención del hospital."
     );
+
 
 } catch (Throwable $e) {
 
@@ -418,13 +466,19 @@ try {
     } catch (Throwable $ignorado) {
     }
 
-    $conexion->close();
+    try {
+        $conexion->close();
+    } catch (Throwable $ignorado) {
+    }
 
-   mostrarResultado(
-    "Error al enviar la encuesta",
-    $e->getMessage(),
-    false
-);
+    mostrarResultado(
+        "No se pudo enviar la encuesta",
+        $e instanceof mysqli_sql_exception
+            ? "Ocurrió un problema al guardar tus respuestas. Intentá nuevamente."
+            : $e->getMessage(),
+        false
+    );
+
 }
 
 ?>
