@@ -51,7 +51,6 @@ $preguntas = $stmt->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- CORREGIDO: el campo real es Pregunta -->
     <title>
         <?= htmlspecialchars($encuesta["Pregunta"], ENT_QUOTES, "UTF-8"); ?>
     </title>
@@ -61,30 +60,59 @@ $preguntas = $stmt->get_result();
 
     <style>
 
+        :root {
+            --verde: #075c45;
+            --verde-oscuro: #064735;
+            --dorado: #d4af37;
+            --fondo: #f4f8f6;
+        }
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #f3f7f5;
+            background: var(--fondo);
             color: #26352f;
         }
 
         .navbar-flem {
-            background: #075c45;
-            padding: 15px 0;
+            background: var(--verde);
+            padding: 12px 0;
         }
 
         .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-hospital {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+        }
+
+        .brand-text {
             color: white;
             font-size: 23px;
             font-weight: bold;
             letter-spacing: 2px;
-            text-decoration: none;
         }
 
-        .brand-symbol {
-            color: #d4af37;
-            font-size: 28px;
-            margin-right: 8px;
+        .brand-text .flem {
+            color: var(--dorado);
+        }
+
+        .brand-text .cruz {
+            color: var(--dorado);
+            margin: 0 3px;
+        }
+
+        .brand-text small {
+            display: block;
+            font-size: 11px;
+            font-weight: normal;
+            letter-spacing: 1px;
         }
 
         .contenedor {
@@ -94,7 +122,7 @@ $preguntas = $stmt->get_result();
         }
 
         .encabezado {
-            background: linear-gradient(135deg, #075c45, #0a7658);
+            background: linear-gradient(135deg, var(--verde), #0a7658);
             color: white;
             padding: 35px;
             border-radius: 17px;
@@ -103,7 +131,7 @@ $preguntas = $stmt->get_result();
         }
 
         .encabezado small {
-            color: #e5b832;
+            color: var(--dorado);
             font-weight: bold;
             letter-spacing: 1px;
         }
@@ -127,7 +155,7 @@ $preguntas = $stmt->get_result();
         }
 
         .pregunta {
-            background: #fff;
+            background: white;
             border: 1px solid #e4ebe7;
             border-left: 4px solid #08775a;
             border-radius: 12px;
@@ -140,14 +168,14 @@ $preguntas = $stmt->get_result();
             font-weight: bold;
             font-size: 16px;
             margin-bottom: 15px;
-            color: #075c45;
+            color: var(--verde);
         }
 
         .opcion {
             display: flex;
             align-items: center;
             gap: 10px;
-            background: #f4f8f6;
+            background: var(--fondo);
             padding: 13px 15px;
             margin-bottom: 9px;
             border-radius: 9px;
@@ -185,7 +213,7 @@ $preguntas = $stmt->get_result();
             padding: 14px;
             border: none;
             border-radius: 9px;
-            background: #075c45;
+            background: var(--verde);
             color: white;
             font-size: 16px;
             font-weight: bold;
@@ -193,7 +221,7 @@ $preguntas = $stmt->get_result();
         }
 
         .btn-flem:hover {
-            background: #064936;
+            background: var(--verde-oscuro);
             color: white;
         }
 
@@ -208,13 +236,53 @@ $preguntas = $stmt->get_result();
 
         .btn-volver:hover {
             background: white;
-            color: #075c45;
+            color: var(--verde);
         }
 
         footer {
             text-align: center;
             color: #78847e;
             padding: 25px;
+        }
+
+        footer strong {
+            color: var(--verde);
+        }
+
+        footer span {
+            color: var(--dorado);
+        }
+
+        @media (max-width: 600px) {
+            .logo-hospital {
+                width: 38px;
+                height: 38px;
+            }
+
+            .brand-text {
+                font-size: 19px;
+            }
+
+            .brand-text small {
+                font-size: 9px;
+            }
+
+            .btn-volver {
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+
+            .encabezado {
+                padding: 23px;
+            }
+
+            .encabezado h1 {
+                font-size: 24px;
+            }
+
+            .formulario {
+                padding: 18px;
+            }
         }
 
     </style>
@@ -228,7 +296,18 @@ $preguntas = $stmt->get_result();
         <div class="container d-flex justify-content-between align-items-center">
 
             <a href="../BackEnd/panel.php" class="brand">
-                <span class="brand-symbol">⚕</span>FLEM
+
+                <img
+                    src="img/logo-hospital-clinicas.png"
+                    alt="Logo Hospital de Clínicas"
+                    class="logo-hospital"
+                >
+
+                <span class="brand-text">
+                    <span class="flem">FLEM</span><span class="cruz">×</span>
+                    <small>HOSPITAL DE CLÍNICAS</small>
+                </span>
+
             </a>
 
             <a href="../BackEnd/panel.php" class="btn-volver">
@@ -245,7 +324,6 @@ $preguntas = $stmt->get_result();
 
             <small>SISTEMA HOSPITALARIO</small>
 
-            <!-- CORREGIDO: columna Pregunta -->
             <h1>
                 <?= htmlspecialchars($encuesta["Pregunta"], ENT_QUOTES, "UTF-8"); ?>
             </h1>
@@ -368,7 +446,7 @@ $preguntas = $stmt->get_result();
     </main>
 
     <footer>
-        <strong>⚕ FLEM</strong>
+        <strong><span>FLEM</span> × Hospital de Clínicas</strong>
         <div>Sistema Hospitalario</div>
     </footer>
 

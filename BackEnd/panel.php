@@ -24,58 +24,96 @@ function limpiar($dato) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>FLEM | Sistema Hospitalario</title>
+    <title>FLEM × Hospital de Clínicas | Panel principal</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
     <style>
 
-        body {
-            background: #f4f8f6;
+        :root {
+            --verde: #075c45;
+            --verde-oscuro: #064936;
+            --dorado: #d4af37;
+            --fondo: #f4f8f6;
         }
+
+        body {
+            background: var(--fondo);
+            color: #26352f;
+            font-family: Arial, sans-serif;
+        }
+
+        /* ENCABEZADO */
 
         .navbar-flem {
-            background: #075c45;
+            background: var(--verde);
+            padding: 14px 0;
         }
 
-        .brand-symbol {
-            color: #d4af37;
-            font-size: 28px;
-            margin-right: 8px;
+        .brand-flem {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
         }
 
         .brand-name {
-            color: white;
-            font-weight: 700;
+            color: var(--dorado);
+            font-size: 24px;
+            font-weight: 800;
             letter-spacing: 2px;
         }
 
+        .brand-symbol {
+            color: var(--dorado);
+            font-size: 27px;
+        }
+
+        .brand-x {
+            color: var(--dorado);
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .logo-hospital {
+            width: 150px;
+            height: 48px;
+            object-fit: contain;
+            background: transparent;
+            padding: 0;
+        }
+
+        /* COLORES */
+
         .gold {
-            color: #b8962e;
+            color: var(--dorado);
         }
 
         .welcome-card {
-            background: linear-gradient(135deg, #075c45, #0a7658);
+            background: linear-gradient(135deg, var(--verde), #0a7658);
             color: white;
             border: none;
             border-radius: 20px;
         }
 
         .role-badge {
-            background: #d4af37;
+            background: var(--dorado);
             color: #173d31;
-            font-weight: 600;
+            font-weight: 700;
         }
+
+        /* TARJETAS */
 
         .option-card {
             border: none;
             border-radius: 18px;
-            transition: 0.25s;
+            transition: transform .25s, box-shadow .25s;
         }
 
         .option-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,.10) !important;
         }
 
         .medical-icon {
@@ -84,13 +122,15 @@ function limpiar($dato) {
         }
 
         .btn-flem {
-            background: #075c45;
+            background: var(--verde);
             color: white;
             border: none;
+            border-radius: 9px;
+            padding: 9px 16px;
         }
 
         .btn-flem:hover {
-            background: #064936;
+            background: var(--verde-oscuro);
             color: white;
         }
 
@@ -99,8 +139,40 @@ function limpiar($dato) {
             border-radius: 18px;
         }
 
+        .info-title {
+            color: var(--verde);
+        }
+
         footer {
             color: #6c757d;
+        }
+
+        .footer-brand {
+            color: var(--dorado);
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        @media (max-width: 500px) {
+
+            .brand-flem {
+                gap: 7px;
+            }
+
+            .brand-name {
+                font-size: 18px;
+            }
+
+            .brand-symbol,
+            .brand-x {
+                font-size: 21px;
+            }
+
+            .logo-hospital {
+                width: 105px;
+                height: 40px;
+            }
+
         }
 
     </style>
@@ -109,14 +181,27 @@ function limpiar($dato) {
 
 <body>
 
+    <!-- ENCABEZADO FLEM × HOSPITAL DE CLÍNICAS -->
+
     <nav class="navbar navbar-flem">
 
         <div class="container">
 
-            <span class="navbar-brand mb-0">
+            <a href="panel.php" class="brand-flem">
+
                 <span class="brand-symbol">⚕</span>
+
                 <span class="brand-name">FLEM</span>
-            </span>
+
+                <span class="brand-x">×</span>
+
+                <img
+                    src="../FrontEnd/img/logo-hospital-clinicas.png"
+                    alt="Hospital de Clínicas"
+                    class="logo-hospital"
+                >
+
+            </a>
 
             <a href="logout.php" class="btn btn-light">
                 Cerrar sesión
@@ -125,6 +210,7 @@ function limpiar($dato) {
         </div>
 
     </nav>
+
 
     <main class="container py-5">
 
@@ -210,7 +296,7 @@ function limpiar($dato) {
                 </div>
 
 
-                <!-- GESTIÓN DE INFORMACIÓN MÉDICA -->
+                <!-- INFORMACIÓN MÉDICA -->
 
                 <div class="col-md-6 col-lg-4">
 
@@ -387,7 +473,7 @@ function limpiar($dato) {
                 </div>
 
 
-                <!-- SEGUIMIENTO DEL TRATAMIENTO -->
+                <!-- SEGUIMIENTO -->
 
                 <div class="col-md-6 col-lg-4">
 
@@ -463,7 +549,7 @@ function limpiar($dato) {
 
             <div class="card-body p-4">
 
-                <h5 class="fw-bold mb-3">
+                <h5 class="fw-bold info-title mb-3">
                     Información de la cuenta
                 </h5>
 
@@ -506,15 +592,19 @@ function limpiar($dato) {
     </main>
 
 
-    <!-- FOOTER -->
+    <!-- PIE DE PÁGINA -->
 
     <footer class="text-center py-4">
 
-        <div class="fw-bold">⚕ FLEM</div>
+        <div class="footer-brand">
+            FLEM × Hospital de Clínicas
+        </div>
 
         <div>Sistema Hospitalario</div>
 
     </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 

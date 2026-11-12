@@ -4,6 +4,7 @@ session_start();
 
 require_once __DIR__ . "/../../BackEnd/conexion.php";
 
+// Verificar que haya iniciado sesión como paciente
 if (!isset($_SESSION["id"]) || $_SESSION["rol"] !== "Paciente") {
     header("Location: ../../BackEnd/login.php");
     exit;
@@ -35,23 +36,58 @@ $resultado = $stmt->get_result();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
+        :root {
+            --verde: #075c45;
+            --verde-oscuro: #064735;
+            --dorado: #d4af37;
+            --fondo: #f4f8f6;
+        }
+
         body {
-            background: #f3f7f5;
+            background: var(--fondo);
             font-family: Arial, sans-serif;
             color: #26352f;
         }
 
         .navbar-flem {
-            background: #075b46;
-            padding: 17px 0;
+            background: var(--verde);
+            padding: 13px 0;
         }
 
-        .logo-flem {
-            color: white;
-            font-size: 22px;
+        .marca {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            text-decoration: none;
+        }
+
+        .logo-hospital {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+        }
+
+        .marca-texto {
+            font-size: 23px;
             font-weight: bold;
             letter-spacing: 2px;
-            text-decoration: none;
+            color: white;
+        }
+
+        .marca-texto .flem {
+            color: var(--dorado);
+        }
+
+        .marca-texto .cruz {
+            color: var(--dorado);
+            margin: 0 3px;
+        }
+
+        .marca-texto .hospital {
+            font-size: 12px;
+            display: block;
+            letter-spacing: 1px;
+            font-weight: normal;
         }
 
         .contenedor {
@@ -61,7 +97,7 @@ $resultado = $stmt->get_result();
         }
 
         .encabezado {
-            background: linear-gradient(120deg, #075b46, #087b5b);
+            background: linear-gradient(120deg, var(--verde), #087b5b);
             color: white;
             padding: 30px;
             border-radius: 16px;
@@ -70,7 +106,7 @@ $resultado = $stmt->get_result();
         }
 
         .encabezado small {
-            color: #e8b832;
+            color: var(--dorado);
             font-weight: bold;
             letter-spacing: 1px;
         }
@@ -89,21 +125,22 @@ $resultado = $stmt->get_result();
 
         .btn-volver {
             background: white;
-            color: #075b46;
+            color: var(--verde);
             border: none;
             border-radius: 7px;
             padding: 9px 16px;
             text-decoration: none;
             display: inline-block;
+            font-weight: bold;
         }
 
         .btn-volver:hover {
             background: #e8f1ed;
-            color: #075b46;
+            color: var(--verde-oscuro);
         }
 
         .btn-descargar {
-            background: #075b46;
+            background: var(--verde);
             color: white;
             border: none;
             border-radius: 7px;
@@ -111,15 +148,17 @@ $resultado = $stmt->get_result();
             text-decoration: none;
             display: inline-block;
             font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
         }
 
         .btn-descargar:hover {
-            background: #064735;
+            background: var(--verde-oscuro);
             color: white;
         }
 
         .table thead th {
-            background: #075b46;
+            background: var(--verde);
             color: white;
             padding: 14px;
             white-space: nowrap;
@@ -137,16 +176,45 @@ $resultado = $stmt->get_result();
             border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
+            white-space: nowrap;
         }
 
         .titulo-seccion {
             font-weight: bold;
             margin-bottom: 20px;
+            color: var(--verde);
+        }
+
+        .vacio-icono {
+            font-size: 45px;
+            color: var(--dorado);
         }
 
         @media (max-width: 600px) {
             .encabezado {
                 padding: 22px;
+            }
+
+            .logo-hospital {
+                width: 38px;
+                height: 38px;
+            }
+
+            .marca-texto {
+                font-size: 19px;
+            }
+
+            .marca-texto .hospital {
+                font-size: 10px;
+            }
+
+            .btn-volver {
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+
+            .tarjeta {
+                padding: 16px;
             }
         }
     </style>
@@ -156,13 +224,24 @@ $resultado = $stmt->get_result();
 
 <nav class="navbar-flem">
     <div class="container d-flex justify-content-between align-items-center">
-        <a href="../../BackEnd/panel.php" class="logo-flem">
-            ⚕ FLEM
+
+        <a href="../../BackEnd/panel.php" class="marca">
+            <img
+                src="../img/logo-hospital-clinicas.png"
+                alt="Logo Hospital de Clínicas"
+                class="logo-hospital"
+            >
+
+            <span class="marca-texto">
+                <span class="flem">FLEM</span><span class="cruz">×</span>
+                <span class="hospital">HOSPITAL DE CLÍNICAS</span>
+            </span>
         </a>
 
         <a href="../../BackEnd/panel.php" class="btn-volver">
             Volver al panel
         </a>
+
     </div>
 </nav>
 
@@ -174,7 +253,8 @@ $resultado = $stmt->get_result();
         <h1>Mis documentos médicos</h1>
 
         <p class="mb-0">
-            Consultá y descargá tus documentos médicos personales.
+            Consultá y descargá tus documentos médicos personales
+            de forma sencilla y segura.
         </p>
     </div>
 
@@ -199,6 +279,7 @@ $resultado = $stmt->get_result();
                     </thead>
 
                     <tbody>
+
                         <?php while ($documento = $resultado->fetch_assoc()): ?>
 
                             <tr>
@@ -234,6 +315,7 @@ $resultado = $stmt->get_result();
                             </tr>
 
                         <?php endwhile; ?>
+
                     </tbody>
 
                 </table>
@@ -242,13 +324,16 @@ $resultado = $stmt->get_result();
         <?php else: ?>
 
             <div class="text-center py-5">
-                <div style="font-size: 45px; color: #c49b29;">▤</div>
+
+                <div class="vacio-icono">▤</div>
 
                 <h5 class="mt-3">Todavía no tenés documentos médicos</h5>
 
                 <p class="text-muted mb-0">
-                    Cuando el hospital cargue tus documentos, aparecerán aquí.
+                    Cuando el hospital cargue tus documentos,
+                    aparecerán aquí automáticamente.
                 </p>
+
             </div>
 
         <?php endif; ?>

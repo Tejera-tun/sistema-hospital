@@ -26,7 +26,6 @@ function limpiarDato($dato) {
 $mensaje = "";
 $error = "";
 
-
 // ===================================
 // PROCESAR FORMULARIOS
 // ===================================
@@ -44,10 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     try {
 
-        // ===================================
         // AGREGAR USUARIO
-        // ===================================
-
         if ($accion === "agregar") {
 
             $nombre = trim($_POST["nombre"] ?? "");
@@ -74,8 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
 
             $buscar = $conexion->prepare(
-                "SELECT id FROM usuarios
-                 WHERE cedula = ? OR correo = ?"
+                "SELECT id FROM usuarios WHERE cedula = ? OR correo = ?"
             );
 
             $buscar->bind_param("ss", $cedula, $correo);
@@ -114,11 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $mensaje = "Usuario agregado correctamente.";
         }
 
-
-        // ===================================
         // MODIFICAR USUARIO
-        // ===================================
-
         elseif ($accion === "modificar") {
 
             $id = filter_var($_POST["id"] ?? "", FILTER_VALIDATE_INT);
@@ -251,11 +242,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $mensaje = "Usuario modificado correctamente.";
         }
 
-
-        // ===================================
         // ELIMINAR USUARIO
-        // ===================================
-
         elseif ($accion === "eliminar") {
 
             $id = filter_var($_POST["id"] ?? "", FILTER_VALIDATE_INT);
@@ -329,7 +316,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
-
 // ===================================
 // CARGAR USUARIO PARA EDITAR
 // ===================================
@@ -355,7 +341,6 @@ if (isset($_GET["editar"]) && ctype_digit($_GET["editar"])) {
     $sql->close();
 }
 
-
 // ===================================
 // LISTAR USUARIOS
 // ===================================
@@ -379,36 +364,62 @@ $totalUsuarios = $resultado->num_rows;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>FLEM | Gestión de usuarios</title>
+    <title>FLEM × Hospital de Clínicas | Gestión de usuarios</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
     <style>
 
+        :root {
+            --verde: #075c45;
+            --verde-oscuro: #064936;
+            --dorado: #d4af37;
+            --fondo: #f4f8f6;
+        }
+
         body {
-            background: #f4f8f6;
+            background: var(--fondo);
             color: #26352f;
             font-family: Arial, sans-serif;
         }
 
+        /* ENCABEZADO FLEM × HOSPITAL */
+
         .navbar-flem {
-            background: #075c45;
+            background: var(--verde);
             padding: 14px 0;
         }
 
-        .brand-symbol {
-            color: #d4af37;
-            font-size: 28px;
-            margin-right: 8px;
+        .brand-flem {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
         }
 
         .brand-name {
-            color: white;
-            font-weight: 700;
+            color: var(--dorado);
+            font-size: 24px;
+            font-weight: 800;
             letter-spacing: 2px;
-            font-size: 22px;
         }
+
+        .brand-x {
+            color: var(--dorado);
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .logo-hospital {
+            width: 150px;
+            height: 48px;
+            object-fit: contain;
+            background: transparent;
+            padding: 0;
+        }
+
+        /* CONTENIDO */
 
         .contenedor {
             max-width: 1200px;
@@ -417,7 +428,7 @@ $totalUsuarios = $resultado->num_rows;
         }
 
         .welcome-card {
-            background: linear-gradient(135deg, #075c45, #0a7658);
+            background: linear-gradient(135deg, var(--verde), #0a7658);
             color: white;
             border: none;
             border-radius: 20px;
@@ -425,7 +436,7 @@ $totalUsuarios = $resultado->num_rows;
         }
 
         .gold {
-            color: #d4af37;
+            color: var(--dorado);
         }
 
         .usuarios-card {
@@ -435,22 +446,22 @@ $totalUsuarios = $resultado->num_rows;
         }
 
         .usuarios-titulo {
-            color: #075c45;
+            color: var(--verde);
         }
 
         .btn-flem {
-            background: #075c45;
+            background: var(--verde);
             color: white;
             border: none;
         }
 
         .btn-flem:hover {
-            background: #064936;
+            background: var(--verde-oscuro);
             color: white;
         }
 
         .usuarios-tabla thead th {
-            background: #075c45;
+            background: var(--verde);
             color: white;
             white-space: nowrap;
         }
@@ -467,22 +478,49 @@ $totalUsuarios = $resultado->num_rows;
 
         .form-control:focus,
         .form-select:focus {
-            border-color: #08775a;
+            border-color: var(--verde);
             box-shadow: 0 0 0 .2rem rgba(8,119,90,.12);
         }
 
         .role-admin {
-            background: #d4af37;
+            background: var(--dorado);
             color: #26352f;
         }
 
         .role-paciente {
             background: #dcebe4;
-            color: #075c45;
+            color: var(--verde);
         }
 
         footer {
             color: #6c757d;
+        }
+
+        .footer-flem {
+            color: var(--dorado);
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        @media (max-width: 500px) {
+
+            .brand-flem {
+                gap: 7px;
+            }
+
+            .brand-name {
+                font-size: 18px;
+            }
+
+            .brand-x {
+                font-size: 21px;
+            }
+
+            .logo-hospital {
+                width: 105px;
+                height: 40px;
+            }
+
         }
 
     </style>
@@ -491,16 +529,23 @@ $totalUsuarios = $resultado->num_rows;
 
 <body>
 
-    <!-- NAVBAR -->
+    <!-- ENCABEZADO -->
 
     <nav class="navbar navbar-flem">
 
         <div class="container">
 
-            <a href="../panel.php" class="text-decoration-none">
+            <a href="../panel.php" class="brand-flem">
 
-                <span class="brand-symbol">⚕</span>
                 <span class="brand-name">FLEM</span>
+
+                <span class="brand-x">×</span>
+
+                <img
+                    src="../../FrontEnd/img/logo-hospital-clinicas.png"
+                    alt="Hospital de Clínicas"
+                    class="logo-hospital"
+                >
 
             </a>
 
@@ -512,10 +557,9 @@ $totalUsuarios = $resultado->num_rows;
 
     </nav>
 
-
     <main class="contenedor">
 
-        <!-- ENCABEZADO -->
+        <!-- ENCABEZADO DE LA PÁGINA -->
 
         <div class="card welcome-card shadow">
 
@@ -530,13 +574,12 @@ $totalUsuarios = $resultado->num_rows;
                 </h1>
 
                 <p class="mb-0">
-                    Administrá los usuarios registrados en FLEM.
+                    Administrá los usuarios registrados en FLEM × Hospital de Clínicas.
                 </p>
 
             </div>
 
         </div>
-
 
         <!-- VOLVER -->
 
@@ -548,28 +591,31 @@ $totalUsuarios = $resultado->num_rows;
 
         </div>
 
-
         <!-- MENSAJES -->
 
         <?php if ($mensaje !== ""): ?>
 
             <div class="alert alert-success alert-dismissible fade show">
+
                 <?= limpiarDato($mensaje) ?>
+
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+
             </div>
 
         <?php endif; ?>
-
 
         <?php if ($error !== ""): ?>
 
             <div class="alert alert-danger alert-dismissible fade show">
+
                 <?= limpiarDato($error) ?>
+
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+
             </div>
 
         <?php endif; ?>
-
 
         <!-- FORMULARIO -->
 
@@ -598,7 +644,6 @@ $totalUsuarios = $resultado->num_rows;
 
                     <?php endif; ?>
 
-
                     <div class="row g-3">
 
                         <div class="col-md-6">
@@ -612,7 +657,6 @@ $totalUsuarios = $resultado->num_rows;
 
                         </div>
 
-
                         <div class="col-md-6">
 
                             <label class="form-label fw-semibold">Apellido</label>
@@ -624,7 +668,6 @@ $totalUsuarios = $resultado->num_rows;
 
                         </div>
 
-
                         <div class="col-md-6">
 
                             <label class="form-label fw-semibold">Cédula</label>
@@ -635,7 +678,6 @@ $totalUsuarios = $resultado->num_rows;
                                    required>
 
                         </div>
-
 
                         <div class="col-md-6">
 
@@ -649,7 +691,6 @@ $totalUsuarios = $resultado->num_rows;
 
                         </div>
 
-
                         <div class="col-md-6">
 
                             <label class="form-label fw-semibold">Teléfono</label>
@@ -660,7 +701,6 @@ $totalUsuarios = $resultado->num_rows;
                                    required>
 
                         </div>
-
 
                         <div class="col-md-6">
 
@@ -673,7 +713,6 @@ $totalUsuarios = $resultado->num_rows;
 
                         </div>
 
-
                         <div class="col-md-6">
 
                             <label class="form-label fw-semibold">Contraseña</label>
@@ -684,7 +723,6 @@ $totalUsuarios = $resultado->num_rows;
                                    placeholder="<?= $editar ? "Dejar vacío para mantener la actual" : "Ingresar contraseña" ?>">
 
                         </div>
-
 
                         <div class="col-md-6">
 
@@ -707,7 +745,6 @@ $totalUsuarios = $resultado->num_rows;
                         </div>
 
                     </div>
-
 
                     <div class="mt-4 d-flex gap-2 flex-wrap">
 
@@ -733,7 +770,6 @@ $totalUsuarios = $resultado->num_rows;
 
         </div>
 
-
         <!-- TABLA DE USUARIOS -->
 
         <div class="card usuarios-card shadow-sm">
@@ -751,7 +787,6 @@ $totalUsuarios = $resultado->num_rows;
                     </span>
 
                 </div>
-
 
                 <div class="table-responsive">
 
@@ -772,7 +807,6 @@ $totalUsuarios = $resultado->num_rows;
                             </tr>
 
                         </thead>
-
 
                         <tbody>
 
@@ -808,11 +842,8 @@ $totalUsuarios = $resultado->num_rows;
 
                                         <a href="gestionUsuarios.php?editar=<?= (int)$usuario["id"] ?>"
                                            class="btn btn-warning btn-sm mb-1">
-
                                             Editar
-
                                         </a>
-
 
                                         <form method="POST"
                                               action="gestionUsuarios.php"
@@ -830,9 +861,7 @@ $totalUsuarios = $resultado->num_rows;
 
                                             <button type="submit"
                                                     class="btn btn-danger btn-sm mb-1">
-
                                                 Eliminar
-
                                             </button>
 
                                         </form>
@@ -855,17 +884,15 @@ $totalUsuarios = $resultado->num_rows;
 
     </main>
 
-
-    <!-- FOOTER -->
+    <!-- PIE DE PÁGINA -->
 
     <footer class="text-center py-4">
 
-        <div class="fw-bold">⚕ FLEM</div>
+        <div class="footer-flem">FLEM × Hospital de Clínicas</div>
 
         <div>Sistema Hospitalario</div>
 
     </footer>
-
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 

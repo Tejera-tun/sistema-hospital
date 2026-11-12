@@ -51,7 +51,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $id_nueva = $stmt->insert_id;
             $stmt->close();
 
-            // Agregar opciones iniciales
             $opciones = $_POST["opciones"] ?? [];
 
             foreach ($opciones as $texto) {
@@ -98,6 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     "SELECT id_pregunta FROM preguntas
                      WHERE id_pregunta = ? AND id_encuesta = ?"
                 );
+
                 $check->bind_param("ii", $id, $id_encuesta);
                 $check->execute();
                 $existe = $check->get_result()->num_rows > 0;
@@ -122,6 +122,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 "SELECT id_pregunta FROM preguntas
                  WHERE id_pregunta = ? AND id_encuesta = ?"
             );
+
             $check->bind_param("ii", $id, $id_encuesta);
             $check->execute();
             $existe = $check->get_result()->num_rows > 0;
@@ -135,6 +136,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 "SELECT COUNT(*) AS total FROM respuestas
                  WHERE id_pregunta = ?"
             );
+
             $check->bind_param("i", $id);
             $check->execute();
             $total = $check->get_result()->fetch_assoc()["total"];
@@ -151,6 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $delete = $conexion->prepare(
                 "DELETE FROM opciones WHERE id_pregunta = ?"
             );
+
             $delete->bind_param("i", $id);
             $delete->execute();
             $delete->close();
@@ -159,6 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 "DELETE FROM preguntas
                  WHERE id_pregunta = ? AND id_encuesta = ?"
             );
+
             $delete->bind_param("ii", $id, $id_encuesta);
             $delete->execute();
             $delete->close();
@@ -182,6 +186,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 "SELECT id_pregunta FROM preguntas
                  WHERE id_pregunta = ? AND id_encuesta = ?"
             );
+
             $check->bind_param("ii", $id, $id_encuesta);
             $check->execute();
             $existe = $check->get_result()->num_rows > 0;
@@ -195,6 +200,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 "INSERT INTO opciones (id_pregunta, texto)
                  VALUES (?, ?)"
             );
+
             $stmt->bind_param("is", $id, $texto);
             $stmt->execute();
             $stmt->close();
@@ -315,10 +321,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     } catch (Throwable $e) {
 
-        if ($conexion->errno || $conexion->connect_errno) {
-            // No se muestran detalles internos de la base de datos.
-        }
-
         try {
             $conexion->rollback();
         } catch (Throwable $ignorado) {
@@ -340,6 +342,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 // Recuperar mensaje
 if (isset($_SESSION["mensaje_encuestas"])) {
+
     $mensaje = $_SESSION["mensaje_encuestas"];
     $tipo_mensaje = $_SESSION["tipo_mensaje_encuestas"];
 
@@ -351,8 +354,10 @@ if (isset($_SESSION["mensaje_encuestas"])) {
 $stmt = $conexion->prepare(
     "SELECT * FROM encuestas WHERE id_encuesta = ?"
 );
+
 $stmt->bind_param("i", $id_encuesta);
 $stmt->execute();
+
 $encuesta = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 
@@ -366,8 +371,10 @@ $stmt = $conexion->prepare(
      WHERE id_encuesta = ?
      ORDER BY id_pregunta"
 );
+
 $stmt->bind_param("i", $id_encuesta);
 $stmt->execute();
+
 $preguntas = $stmt->get_result();
 
 $lista_preguntas = [];
@@ -377,7 +384,9 @@ while ($pregunta = $preguntas->fetch_assoc()) {
     $id = (int) $pregunta["id_pregunta"];
 
     $opciones = $conexion->prepare(
-        "SELECT * FROM opciones WHERE id_pregunta = ? ORDER BY id_opcion"
+        "SELECT * FROM opciones
+         WHERE id_pregunta = ?
+         ORDER BY id_opcion"
     );
 
     $opciones->bind_param("i", $id);
@@ -395,32 +404,67 @@ $stmt->close();
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Administrar encuestas | FLEM</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 
     <style>
+
+        :root {
+            --verde: #075c45;
+            --verde-oscuro: #064735;
+            --dorado: #d4af37;
+            --fondo: #f4f8f6;
+        }
+
         body {
-            background: #f3f7f5;
+            background: var(--fondo);
             font-family: Arial, sans-serif;
             color: #26352f;
         }
 
         .navbar-flem {
-            background: #075b46;
-            padding: 17px 0;
+            background: var(--verde);
+            padding: 12px 0;
         }
 
-        .logo {
+        .marca {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            text-decoration: none;
+        }
+
+        .logo-hospital {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+        }
+
+        .marca-texto {
             color: white;
-            font-size: 22px;
+            font-size: 23px;
             font-weight: bold;
             letter-spacing: 2px;
-            text-decoration: none;
+        }
+
+        .marca-texto .flem,
+        .marca-texto .cruz {
+            color: var(--dorado);
+        }
+
+        .marca-texto small {
+            display: block;
+            font-size: 11px;
+            font-weight: normal;
+            letter-spacing: 1px;
         }
 
         .contenedor {
@@ -430,18 +474,23 @@ $stmt->close();
         }
 
         .encabezado {
-            background: linear-gradient(120deg, #075b46, #087b5b);
+            background: linear-gradient(120deg, var(--verde), #087b5b);
             color: white;
             padding: 30px;
             border-radius: 16px;
             margin-bottom: 25px;
-            box-shadow: 0 5px 14px rgba(0,0,0,.1);
+            box-shadow: 0 5px 14px rgba(0,0,0,.08);
         }
 
         .encabezado small {
-            color: #e8b832;
+            color: var(--dorado);
             font-weight: bold;
             letter-spacing: 1px;
+        }
+
+        .encabezado h1 {
+            font-weight: bold;
+            margin-top: 10px;
         }
 
         .tarjeta {
@@ -453,61 +502,205 @@ $stmt->close();
         }
 
         .pregunta {
-            border-left: 5px solid #075b46;
+            border-left: 5px solid var(--verde);
+        }
+
+        .titulo-seccion {
+            color: var(--verde);
+            font-weight: bold;
         }
 
         .btn-flem {
-            background: #075b46;
+            background: var(--verde);
             color: white;
             border: none;
         }
 
         .btn-flem:hover {
-            background: #064735;
+            background: var(--verde-oscuro);
             color: white;
         }
 
         .btn-dorado {
-            background: #e8b832;
+            background: var(--dorado);
             color: #26352f;
             border: none;
+            font-weight: bold;
+        }
+
+        .btn-dorado:hover {
+            background: #c29d27;
+            color: #26352f;
         }
 
         .opcion {
-            background: #f3f7f5;
+            background: var(--fondo);
+            border: 1px solid #e4ebe7;
             border-radius: 8px;
             padding: 12px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 10px 12px;
+            border-color: #d8e1dc;
+        }
+
+        .form-control:focus {
+            border-color: var(--verde);
+            box-shadow: 0 0 0 3px rgba(7,92,69,.12);
+        }
+
+        .btn-volver {
+            background: white;
+            color: var(--verde);
+            border: none;
+            border-radius: 8px;
+            padding: 9px 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .btn-volver:hover {
+            background: #e8f1ed;
+            color: var(--verde-oscuro);
+        }
+
+        .estado {
+            background: #e4f2e9;
+            color: #17633e;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .estado-inactivo {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .pie {
+            text-align: center;
+            color: #7a8981;
+            padding: 25px;
+            font-size: 13px;
+        }
+
+        .pie strong {
+            color: var(--verde);
+        }
+
+        .pie span {
+            color: var(--dorado);
+        }
+
+        @media (max-width: 600px) {
+
+            .logo-hospital {
+                width: 38px;
+                height: 38px;
+            }
+
+            .marca-texto {
+                font-size: 19px;
+            }
+
+            .marca-texto small {
+                font-size: 9px;
+            }
+
+            .btn-volver {
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+
+            .contenedor {
+                margin: 25px auto;
+            }
+
+            .encabezado {
+                padding: 22px;
+            }
+
+            .encabezado h1 {
+                font-size: 24px;
+            }
+
+            .tarjeta {
+                padding: 18px;
+            }
+        }
+
     </style>
+
 </head>
 
 <body>
 
 <nav class="navbar-flem">
+
     <div class="container d-flex justify-content-between align-items-center">
-        <a href="../panel.php" class="logo">⚕ FLEM</a>
-        <a href="../panel.php" class="btn btn-light">Volver al panel</a>
+
+        <a href="../panel.php" class="marca">
+
+            <img
+                src="../../FrontEnd/img/logo-hospital-clinicas.png"
+                alt="Logo Hospital de Clínicas"
+                class="logo-hospital"
+            >
+
+            <span class="marca-texto">
+                <span class="flem">FLEM</span><span class="cruz"> ×</span>
+                <small>HOSPITAL DE CLÍNICAS</small>
+            </span>
+
+        </a>
+
+        <a href="../panel.php" class="btn-volver">
+            Volver al panel
+        </a>
+
     </div>
+
 </nav>
 
 <main class="contenedor">
 
     <div class="encabezado">
+
         <small>SISTEMA HOSPITALARIO</small>
-        <h1 class="fw-bold mt-2">Administración de encuestas</h1>
-        <p class="mb-0">Gestioná las preguntas y opciones de respuesta.</p>
+
+        <h1 class="mt-2">Administración de encuestas</h1>
+
+        <p class="mb-0">
+            Gestioná las preguntas y opciones de respuesta de las encuestas.
+        </p>
+
     </div>
 
     <?php if ($mensaje !== ""): ?>
+
         <div class="alert alert-<?= htmlspecialchars($tipo_mensaje) ?> alert-dismissible fade show">
+
             <?= htmlspecialchars($mensaje) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+            </button>
+
         </div>
+
     <?php endif; ?>
 
+    <!-- INFORMACIÓN DE LA ENCUESTA -->
+
     <div class="tarjeta">
-        <h4 class="fw-bold" style="color:#075b46;">
+
+        <h4 class="titulo-seccion">
             <?= htmlspecialchars($encuesta["Pregunta"]) ?>
         </h4>
 
@@ -515,20 +708,37 @@ $stmt->close();
             <?= htmlspecialchars($encuesta["descripcion"] ?? "") ?>
         </p>
 
-        <span class="badge <?= $encuesta["estado"] === "activa" ? "bg-success" : "bg-secondary" ?>">
+        <span class="<?= $encuesta["estado"] === "activa" ? "estado" : "estado estado-inactivo" ?>">
             <?= htmlspecialchars($encuesta["estado"]) ?>
         </span>
+
     </div>
+
+    <!-- AGREGAR PREGUNTA -->
 
     <div class="tarjeta">
 
-        <h4 class="fw-bold mb-3">Agregar una pregunta</h4>
+        <h4 class="titulo-seccion mb-3">
+            Agregar una pregunta
+        </h4>
 
         <form method="POST">
-            <input type="hidden" name="token" value="<?= htmlspecialchars($_SESSION["token_encuestas"]) ?>">
-            <input type="hidden" name="accion" value="crear_pregunta">
 
-            <label class="form-label fw-semibold">Texto de la pregunta</label>
+            <input
+                type="hidden"
+                name="token"
+                value="<?= htmlspecialchars($_SESSION["token_encuestas"]) ?>"
+            >
+
+            <input
+                type="hidden"
+                name="accion"
+                value="crear_pregunta"
+            >
+
+            <label class="form-label fw-semibold">
+                Texto de la pregunta
+            </label>
 
             <input
                 type="text"
@@ -543,139 +753,299 @@ $stmt->close();
                 Opciones de respuesta (si corresponde)
             </label>
 
-            <input type="text" name="opciones[]" class="form-control mb-2" placeholder="Primera opción">
-            <input type="text" name="opciones[]" class="form-control mb-2" placeholder="Segunda opción">
-            <input type="text" name="opciones[]" class="form-control mb-3" placeholder="Tercera opción">
+            <input
+                type="text"
+                name="opciones[]"
+                class="form-control mb-2"
+                placeholder="Primera opción"
+            >
+
+            <input
+                type="text"
+                name="opciones[]"
+                class="form-control mb-2"
+                placeholder="Segunda opción"
+            >
+
+            <input
+                type="text"
+                name="opciones[]"
+                class="form-control mb-3"
+                placeholder="Tercera opción"
+            >
 
             <button type="submit" class="btn btn-flem">
                 + Agregar pregunta
             </button>
+
         </form>
 
         <p class="text-muted small mt-3 mb-0">
             Si dejás las opciones vacías, la pregunta será de respuesta escrita.
         </p>
+
     </div>
 
-    <h4 class="fw-bold mb-3">Preguntas existentes</h4>
+    <!-- PREGUNTAS EXISTENTES -->
 
-    <?php foreach ($lista_preguntas as $pregunta): ?>
+    <h4 class="titulo-seccion mb-3">
+        Preguntas existentes
+    </h4>
 
-        <div class="tarjeta pregunta">
+    <?php if (count($lista_preguntas) > 0): ?>
 
-            <form method="POST" class="mb-3">
-                <input type="hidden" name="token" value="<?= htmlspecialchars($_SESSION["token_encuestas"]) ?>">
-                <input type="hidden" name="accion" value="editar_pregunta">
-                <input type="hidden" name="id_pregunta" value="<?= (int)$pregunta["id_pregunta"] ?>">
+        <?php foreach ($lista_preguntas as $pregunta): ?>
 
-                <label class="form-label fw-bold">
-                    Pregunta #<?= (int)$pregunta["id_pregunta"] ?>
-                </label>
+            <div class="tarjeta pregunta">
 
-                <div class="d-flex gap-2 flex-wrap">
+                <!-- EDITAR PREGUNTA -->
+
+                <form method="POST" class="mb-3">
+
                     <input
-                        type="text"
-                        name="pregunta"
-                        class="form-control flex-grow-1"
-                        value="<?= htmlspecialchars($pregunta["pregunta"]) ?>"
-                        required
+                        type="hidden"
+                        name="token"
+                        value="<?= htmlspecialchars($_SESSION["token_encuestas"]) ?>"
                     >
 
-                    <button class="btn btn-dorado" type="submit">
-                        Guardar cambios
-                    </button>
-                </div>
-            </form>
+                    <input
+                        type="hidden"
+                        name="accion"
+                        value="editar_pregunta"
+                    >
 
-            <h6 class="fw-bold mt-3">Opciones de respuesta</h6>
+                    <input
+                        type="hidden"
+                        name="id_pregunta"
+                        value="<?= (int)$pregunta["id_pregunta"] ?>"
+                    >
 
-            <?php if (count($pregunta["opciones"]) > 0): ?>
+                    <label class="form-label fw-bold">
+                        Pregunta #<?= (int)$pregunta["id_pregunta"] ?>
+                    </label>
 
-                <?php foreach ($pregunta["opciones"] as $opcion): ?>
+                    <div class="d-flex gap-2 flex-wrap">
 
-                    <div class="opcion">
+                        <input
+                            type="text"
+                            name="pregunta"
+                            class="form-control flex-grow-1"
+                            value="<?= htmlspecialchars($pregunta["pregunta"]) ?>"
+                            required
+                        >
 
-                        <form method="POST" class="d-flex gap-2 flex-wrap">
-                            <input type="hidden" name="token" value="<?= htmlspecialchars($_SESSION["token_encuestas"]) ?>">
-                            <input type="hidden" name="accion" value="editar_opcion">
-                            <input type="hidden" name="id_opcion" value="<?= (int)$opcion["id_opcion"] ?>">
-                            <input type="hidden" name="id_pregunta" value="<?= (int)$pregunta["id_pregunta"] ?>">
-
-                            <input
-                                type="text"
-                                name="texto"
-                                class="form-control flex-grow-1"
-                                value="<?= htmlspecialchars($opcion["texto"]) ?>"
-                                required
-                            >
-
-                            <button type="submit" class="btn btn-outline-success btn-sm">
-                                Guardar
-                            </button>
-                        </form>
-
-                        <form method="POST" class="mt-2"
-                              onsubmit="return confirm('¿Querés eliminar esta opción?');">
-
-                            <input type="hidden" name="token" value="<?= htmlspecialchars($_SESSION["token_encuestas"]) ?>">
-                            <input type="hidden" name="accion" value="eliminar_opcion">
-                            <input type="hidden" name="id_opcion" value="<?= (int)$opcion["id_opcion"] ?>">
-                            <input type="hidden" name="id_pregunta" value="<?= (int)$pregunta["id_pregunta"] ?>">
-
-                            <button type="submit" class="btn btn-outline-danger btn-sm">
-                                Eliminar opción
-                            </button>
-                        </form>
+                        <button class="btn btn-dorado" type="submit">
+                            Guardar cambios
+                        </button>
 
                     </div>
 
-                <?php endforeach; ?>
+                </form>
 
-            <?php else: ?>
+                <h6 class="fw-bold mt-3 titulo-seccion">
+                    Opciones de respuesta
+                </h6>
 
-                <p class="text-muted">Esta pregunta permite una respuesta escrita.</p>
+                <?php if (count($pregunta["opciones"]) > 0): ?>
 
-            <?php endif; ?>
+                    <?php foreach ($pregunta["opciones"] as $opcion): ?>
 
-            <form method="POST" class="mt-3">
-                <input type="hidden" name="token" value="<?= htmlspecialchars($_SESSION["token_encuestas"]) ?>">
-                <input type="hidden" name="accion" value="crear_opcion">
-                <input type="hidden" name="id_pregunta" value="<?= (int)$pregunta["id_pregunta"] ?>">
+                        <div class="opcion">
 
-                <div class="input-group">
+                            <!-- EDITAR OPCIÓN -->
+
+                            <form method="POST" class="d-flex gap-2 flex-wrap">
+
+                                <input
+                                    type="hidden"
+                                    name="token"
+                                    value="<?= htmlspecialchars($_SESSION["token_encuestas"]) ?>"
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="accion"
+                                    value="editar_opcion"
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="id_opcion"
+                                    value="<?= (int)$opcion["id_opcion"] ?>"
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="id_pregunta"
+                                    value="<?= (int)$pregunta["id_pregunta"] ?>"
+                                >
+
+                                <input
+                                    type="text"
+                                    name="texto"
+                                    class="form-control flex-grow-1"
+                                    value="<?= htmlspecialchars($opcion["texto"]) ?>"
+                                    required
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-outline-success btn-sm">
+                                    Guardar
+                                </button>
+
+                            </form>
+
+                            <!-- ELIMINAR OPCIÓN -->
+
+                            <form
+                                method="POST"
+                                class="mt-2"
+                                onsubmit="return confirm('¿Querés eliminar esta opción?');">
+
+                                <input
+                                    type="hidden"
+                                    name="token"
+                                    value="<?= htmlspecialchars($_SESSION["token_encuestas"]) ?>"
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="accion"
+                                    value="eliminar_opcion"
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="id_opcion"
+                                    value="<?= (int)$opcion["id_opcion"] ?>"
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="id_pregunta"
+                                    value="<?= (int)$pregunta["id_pregunta"] ?>"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-outline-danger btn-sm">
+                                    Eliminar opción
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    <?php endforeach; ?>
+
+                <?php else: ?>
+
+                    <p class="text-muted">
+                        Esta pregunta permite una respuesta escrita.
+                    </p>
+
+                <?php endif; ?>
+
+                <!-- AGREGAR OPCIÓN -->
+
+                <form method="POST" class="mt-3">
+
                     <input
-                        type="text"
-                        name="texto"
-                        class="form-control"
-                        placeholder="Nueva opción de respuesta"
-                        required
+                        type="hidden"
+                        name="token"
+                        value="<?= htmlspecialchars($_SESSION["token_encuestas"]) ?>"
                     >
 
-                    <button class="btn btn-flem" type="submit">
-                        + Agregar opción
+                    <input
+                        type="hidden"
+                        name="accion"
+                        value="crear_opcion"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="id_pregunta"
+                        value="<?= (int)$pregunta["id_pregunta"] ?>"
+                    >
+
+                    <div class="input-group">
+
+                        <input
+                            type="text"
+                            name="texto"
+                            class="form-control"
+                            placeholder="Nueva opción de respuesta"
+                            required
+                        >
+
+                        <button class="btn btn-flem" type="submit">
+                            + Agregar opción
+                        </button>
+
+                    </div>
+
+                </form>
+
+                <hr>
+
+                <!-- ELIMINAR PREGUNTA -->
+
+                <form
+                    method="POST"
+                    onsubmit="return confirm('¿Eliminar esta pregunta? Solo se podrá eliminar si no tiene respuestas registradas.');">
+
+                    <input
+                        type="hidden"
+                        name="token"
+                        value="<?= htmlspecialchars($_SESSION["token_encuestas"]) ?>"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="accion"
+                        value="eliminar_pregunta"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="id_pregunta"
+                        value="<?= (int)$pregunta["id_pregunta"] ?>"
+                    >
+
+                    <button
+                        type="submit"
+                        class="btn btn-outline-danger btn-sm">
+                        Eliminar pregunta
                     </button>
-                </div>
-            </form>
 
-            <hr>
+                </form>
 
-            <form method="POST"
-                  onsubmit="return confirm('¿Eliminar esta pregunta? Solo se podrá eliminar si no tiene respuestas registradas.');">
+            </div>
 
-                <input type="hidden" name="token" value="<?= htmlspecialchars($_SESSION["token_encuestas"]) ?>">
-                <input type="hidden" name="accion" value="eliminar_pregunta">
-                <input type="hidden" name="id_pregunta" value="<?= (int)$pregunta["id_pregunta"] ?>">
+        <?php endforeach; ?>
 
-                <button type="submit" class="btn btn-outline-danger btn-sm">
-                    Eliminar pregunta
-                </button>
-            </form>
+    <?php else: ?>
+
+        <div class="tarjeta text-center">
+
+            <p class="text-secondary mb-0">
+                Todavía no hay preguntas registradas en esta encuesta.
+            </p>
 
         </div>
 
-    <?php endforeach; ?>
+    <?php endif; ?>
 
 </main>
+
+<footer class="pie">
+
+    <strong><span>FLEM</span> × Hospital de Clínicas</strong>
+
+    <div>Sistema de gestión hospitalaria</div>
+
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 

@@ -9,19 +9,18 @@ require_once __DIR__ . "/../conexion.php";
 // 1. VERIFICAR SESIÓN Y PERMISOS
 // =====================================
 
-if (!isset($_SESSION["id"])) {
-    die("Debes iniciar sesión.");
-}
-
 if (
+    !isset($_SESSION["id"]) ||
     !isset($_SESSION["rol"]) ||
     $_SESSION["rol"] !== "Administrador"
 ) {
+    http_response_code(403);
     die("Acceso denegado. Solo administradores.");
 }
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    die("Método no permitido.");
+    header("Location: ../../FrontEnd/DocumentosMedicos/documentosMedicos.php");
+    exit;
 }
 
 // =====================================
@@ -51,7 +50,7 @@ if (
     $nombre === "" ||
     !in_array($categoria, $categoriasPermitidas, true)
 ) {
-    die("Completa correctamente todos los campos.");
+    die("Completá correctamente todos los campos.");
 }
 
 if (strlen($nombre) > 200) {
@@ -63,7 +62,8 @@ if (strlen($nombre) > 200) {
 // =====================================
 
 $consulta = $conexion->prepare(
-    "SELECT id FROM usuarios
+    "SELECT id
+     FROM usuarios
      WHERE id = ? AND rol = 'Paciente'"
 );
 
@@ -73,6 +73,7 @@ $consulta->execute();
 $resultado = $consulta->get_result();
 
 if ($resultado->num_rows !== 1) {
+    $consulta->close();
     die("El paciente seleccionado no existe.");
 }
 
@@ -89,7 +90,7 @@ if (!isset($_FILES["documento"])) {
 $archivo = $_FILES["documento"];
 
 if ($archivo["error"] !== UPLOAD_ERR_OK) {
-    die("Error al recibir el archivo. Código: " . $archivo["error"]);
+    die("Error al recibir el archivo.");
 }
 
 if ($archivo["size"] > 10 * 1024 * 1024) {
@@ -112,22 +113,29 @@ $extension = strtolower(
 );
 
 $tiposPermitidos = [
+
     "pdf" => ["application/pdf"],
+
     "jpg" => ["image/jpeg"],
+
     "jpeg" => ["image/jpeg"],
+
     "png" => ["image/png"],
+
     "docx" => [
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "application/zip"
     ],
+
     "xlsx" => [
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "application/zip"
     ]
+
 ];
 
 if (!isset($tiposPermitidos[$extension])) {
-    die("Formato no permitido.");
+    die("Formato de archivo no permitido.");
 }
 
 $finfo = new finfo(FILEINFO_MIME_TYPE);
@@ -137,7 +145,9 @@ if (!in_array($mime, $tiposPermitidos[$extension], true)) {
     die("El contenido del archivo no coincide con su extensión.");
 }
 
-// COMPROBAR DOCUMENTOS OFFICE
+// =====================================
+// 6. COMPROBAR DOCUMENTOS OFFICE
+// =====================================
 
 if (in_array($extension, ["docx", "xlsx"], true)) {
 
@@ -167,7 +177,7 @@ if (in_array($extension, ["docx", "xlsx"], true)) {
 }
 
 // =====================================
-// 6. VERIFICAR ALMACENAMIENTO
+// 7. VERIFICAR ALMACENAMIENTO
 // =====================================
 
 $directorio = dirname(__DIR__, 2)
@@ -185,7 +195,7 @@ if (!is_writable($directorio)) {
 }
 
 // =====================================
-// 7. GENERAR NOMBRE SEGURO
+// 8. GENERAR NOMBRE SEGURO
 // =====================================
 
 $nombreArchivo = bin2hex(random_bytes(24))
@@ -200,12 +210,12 @@ if (!move_uploaded_file($archivo["tmp_name"], $rutaDestino)) {
 }
 
 // =====================================
-// 8. GUARDAR INFORMACIÓN EN MYSQL
+// 9. GUARDAR INFORMACIÓN EN MYSQL
 // =====================================
 
 $rutaBD = "Documentos Medicos/documentos_medicos/" . $nombreArchivo;
 
-$id_administrador = $_SESSION["id"];
+$id_administrador = (int)$_SESSION["id"];
 $tipo = strtoupper($extension);
 
 $consulta = $conexion->prepare(
@@ -226,7 +236,7 @@ if (!$consulta) {
 
     unlink($rutaDestino);
 
-    die("Error al preparar la consulta: " . $conexion->error);
+    die("No se pudo preparar el registro del documento.");
 }
 
 $consulta->bind_param(
@@ -246,11 +256,55 @@ if ($consulta->execute()) {
     $conexion->close();
 
     echo "
-    <script>
-        alert('Documento médico cargado correctamente.');
-        window.location.href =
-        '/FrontEnd/DocumentosMedicos/documentosMedicos.php';
-    </script>
+    <!DOCTYPE html>
+    <html lang='es'>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <title>Documento cargado</title>
+        <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+        <style>
+            body {
+                background: #f4f8f6;
+                font-family: Arial, sans-serif;
+            }
+            .mensaje {
+                max-width: 500px;
+                margin: 100px auto;
+                padding: 35px;
+                background: white;
+                border-radius: 18px;
+                text-align: center;
+                box-shadow: 0 4px 15px rgba(0,0,0,.08);
+            }
+            .marca {
+                color: #d4af37;
+                font-size: 23px;
+                font-weight: bold;
+                letter-spacing: 2px;
+            }
+            .btn-flem {
+                background: #075c45;
+                color: white;
+            }
+            .btn-flem:hover {
+                background: #064936;
+                color: white;
+            }
+        </style>
+    </head>
+    <body>
+        <div class='mensaje'>
+            <div class='marca'>FLEM × Hospital de Clínicas</div>
+            <h3 class='mt-4 text-success'>¡Documento cargado!</h3>
+            <p>El documento médico se registró correctamente.</p>
+            <a href='/FrontEnd/DocumentosMedicos/documentosMedicos.php'
+               class='btn btn-flem mt-2'>
+                Volver a documentos médicos
+            </a>
+        </div>
+    </body>
+    </html>
     ";
 
     exit;
@@ -259,7 +313,10 @@ if ($consulta->execute()) {
 
     unlink($rutaDestino);
 
-    die("Error al registrar el documento: " . $consulta->error);
+    $consulta->close();
+    $conexion->close();
+
+    die("No se pudo registrar el documento en la base de datos.");
 }
 
 ?>
