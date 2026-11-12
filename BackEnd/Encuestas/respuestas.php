@@ -203,7 +203,8 @@ function mostrarResultado($titulo, $mensaje, $exito = true)
                     <?= htmlspecialchars($mensaje) ?>
                 </p>
 
-                <a href="../BackEnd/panel.php" class="btn-flem">
+                <!-- RUTA CORREGIDA -->
+                <a href="../panel.php" class="btn-flem">
                     Volver al panel
                 </a>
 
