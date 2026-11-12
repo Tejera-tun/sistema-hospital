@@ -67,6 +67,10 @@ $consulta = $conexion->prepare(
      WHERE id = ? AND rol = 'Paciente'"
 );
 
+if (!$consulta) {
+    die("No se pudo preparar la consulta del paciente.");
+}
+
 $consulta->bind_param("i", $id_paciente);
 $consulta->execute();
 
@@ -90,7 +94,7 @@ if (!isset($_FILES["documento"])) {
 $archivo = $_FILES["documento"];
 
 if ($archivo["error"] !== UPLOAD_ERR_OK) {
-    die("Error al recibir el archivo.");
+    die("Error al recibir el archivo. Código: " . (int)$archivo["error"]);
 }
 
 if ($archivo["size"] > 10 * 1024 * 1024) {
@@ -177,21 +181,37 @@ if (in_array($extension, ["docx", "xlsx"], true)) {
 }
 
 // =====================================
-// 7. VERIFICAR ALMACENAMIENTO
+// 7. CREAR Y VERIFICAR ALMACENAMIENTO
 // =====================================
 
-$directorio = dirname(__DIR__, 2)
+// Obtener la carpeta principal del proyecto.
+$directorioPrincipal = dirname(__DIR__, 2);
+
+// Definir la carpeta de almacenamiento.
+$directorio = $directorioPrincipal
     . DIRECTORY_SEPARATOR
     . "Documentos Medicos"
     . DIRECTORY_SEPARATOR
     . "documentos_medicos";
 
+// CREAR LA CARPETA AUTOMÁTICAMENTE SI NO EXISTE.
+
 if (!is_dir($directorio)) {
-    die("No existe la carpeta de almacenamiento de documentos.");
+
+    if (!mkdir($directorio, 0755, true) && !is_dir($directorio)) {
+        die("No se pudo crear la carpeta de almacenamiento. Verificá los permisos del servidor.");
+    }
+
 }
 
+// Verificar que realmente exista.
+if (!is_dir($directorio)) {
+    die("No se pudo encontrar la carpeta de almacenamiento.");
+}
+
+// Verificar permisos de escritura.
 if (!is_writable($directorio)) {
-    die("No hay permisos para guardar documentos.");
+    die("No hay permisos para guardar documentos en esta carpeta.");
 }
 
 // =====================================
@@ -205,6 +225,7 @@ $rutaDestino = $directorio
     . DIRECTORY_SEPARATOR
     . $nombreArchivo;
 
+// Guardar archivo físicamente.
 if (!move_uploaded_file($archivo["tmp_name"], $rutaDestino)) {
     die("No se pudo guardar el archivo.");
 }
@@ -213,6 +234,7 @@ if (!move_uploaded_file($archivo["tmp_name"], $rutaDestino)) {
 // 9. GUARDAR INFORMACIÓN EN MYSQL
 // =====================================
 
+// Ruta relativa que se almacena en la base de datos.
 $rutaBD = "Documentos Medicos/documentos_medicos/" . $nombreArchivo;
 
 $id_administrador = (int)$_SESSION["id"];
@@ -234,7 +256,9 @@ $consulta = $conexion->prepare(
 
 if (!$consulta) {
 
-    unlink($rutaDestino);
+    if (is_file($rutaDestino)) {
+        unlink($rutaDestino);
+    }
 
     die("No se pudo preparar el registro del documento.");
 }
@@ -250,24 +274,39 @@ $consulta->bind_param(
     $rutaBD
 );
 
+// =====================================
+// 10. EJECUTAR REGISTRO
+// =====================================
+
 if ($consulta->execute()) {
 
     $consulta->close();
     $conexion->close();
 
-    echo "
+    ?>
+
     <!DOCTYPE html>
-    <html lang='es'>
+    <html lang="es">
+
     <head>
-        <meta charset='UTF-8'>
-        <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
         <title>Documento cargado</title>
-        <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        >
+
         <style>
+
             body {
                 background: #f4f8f6;
                 font-family: Arial, sans-serif;
             }
+
             .mensaje {
                 max-width: 500px;
                 margin: 100px auto;
@@ -277,46 +316,73 @@ if ($consulta->execute()) {
                 text-align: center;
                 box-shadow: 0 4px 15px rgba(0,0,0,.08);
             }
+
             .marca {
                 color: #d4af37;
                 font-size: 23px;
                 font-weight: bold;
                 letter-spacing: 2px;
             }
+
             .btn-flem {
                 background: #075c45;
                 color: white;
             }
+
             .btn-flem:hover {
                 background: #064936;
                 color: white;
             }
+
         </style>
+
     </head>
+
     <body>
-        <div class='mensaje'>
-            <div class='marca'>FLEM × Hospital de Clínicas</div>
-            <h3 class='mt-4 text-success'>¡Documento cargado!</h3>
-            <p>El documento médico se registró correctamente.</p>
-            <a href='/FrontEnd/DocumentosMedicos/documentosMedicos.php'
-               class='btn btn-flem mt-2'>
+
+        <div class="mensaje">
+
+            <div class="marca">
+                FLEM × Hospital de Clínicas
+            </div>
+
+            <h3 class="mt-4 text-success">
+                ¡Documento cargado!
+            </h3>
+
+            <p>
+                El documento médico se registró correctamente.
+            </p>
+
+            <a
+                href="../../FrontEnd/DocumentosMedicos/documentosMedicos.php"
+                class="btn btn-flem mt-2"
+            >
                 Volver a documentos médicos
             </a>
+
         </div>
+
     </body>
+
     </html>
-    ";
+
+    <?php
 
     exit;
 
 } else {
 
-    unlink($rutaDestino);
+    // Si falla MySQL, eliminar el archivo que acabamos de subir.
+    if (is_file($rutaDestino)) {
+        unlink($rutaDestino);
+    }
 
     $consulta->close();
     $conexion->close();
 
     die("No se pudo registrar el documento en la base de datos.");
+
 }
 
 ?>
