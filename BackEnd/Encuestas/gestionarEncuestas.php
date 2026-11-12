@@ -7,7 +7,7 @@ if (!isset($_SESSION["id"]) || ($_SESSION["rol"] ?? "") !== "Administrador") {
     exit;
 }
 
-require_once __DIR__ . "/../conexion_encuestas.php";
+require_once __DIR__ . "/conexion_encuestas.php";
 
 $id_encuesta = 1;
 

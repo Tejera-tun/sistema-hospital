@@ -1,3 +1,4 @@
+
 <?php
 
 session_start();
@@ -10,7 +11,7 @@ if (
     exit;
 }
 
-require_once __DIR__ . "/../conexion_encuestas.php";
+require_once __DIR__ . "/conexion_encuestas.php";
 
 function h($valor) {
     return htmlspecialchars((string)$valor, ENT_QUOTES, "UTF-8");
@@ -44,7 +45,6 @@ try {
     $totalRespuestas = (int)($resumen["total_respuestas"] ?? 0);
     $totalParticipantes = (int)($resumen["total_participantes"] ?? 0);
 
-
     // OBTENER ENCUESTAS
 
     $resultadoEncuestas = $conexion->query(
@@ -60,7 +60,6 @@ try {
     while ($fila = $resultadoEncuestas->fetch_assoc()) {
         $encuestas[] = $fila;
     }
-
 
     // OBTENER PREGUNTAS
 
@@ -79,7 +78,6 @@ try {
 
         $idPregunta = (int)$pregunta["id_pregunta"];
 
-
         // OBTENER OPCIONES Y CANTIDAD DE RESPUESTAS
 
         $stmtOpciones = $conexion->prepare("
@@ -96,7 +94,6 @@ try {
         ");
 
         $stmtOpciones->bind_param("i", $idPregunta);
-
         $stmtOpciones->execute();
 
         $resultadoOpciones = $stmtOpciones->get_result();
@@ -115,7 +112,6 @@ try {
 
         $stmtOpciones->close();
 
-
         // RESPUESTAS ABIERTAS
 
         $textos = [];
@@ -132,7 +128,6 @@ try {
             ");
 
             $stmtTextos->bind_param("i", $idPregunta);
-
             $stmtTextos->execute();
 
             $resultadoTextos = $stmtTextos->get_result();
@@ -146,7 +141,6 @@ try {
             $totalPregunta = count($textos);
         }
 
-
         $idEncuesta = (int)$pregunta["id_encuesta"];
 
         $preguntasPorEncuesta[$idEncuesta][] = [
@@ -157,7 +151,6 @@ try {
             "total" => $totalPregunta
         ];
     }
-
 
     // RESPUESTAS INDIVIDUALES
 
@@ -191,7 +184,6 @@ try {
 
 ?>
 
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -209,7 +201,6 @@ try {
     >
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 
     <style>
 
@@ -306,9 +297,7 @@ try {
 
 </head>
 
-
 <body>
-
 
 <!-- ENCABEZADO -->
 
@@ -336,9 +325,7 @@ try {
 
 </nav>
 
-
 <main class="container py-5">
-
 
     <!-- PRESENTACIÓN -->
 
@@ -356,7 +343,6 @@ try {
 
     </div>
 
-
     <?php if ($error !== ""): ?>
 
         <div class="alert alert-danger">
@@ -364,7 +350,6 @@ try {
         </div>
 
     <?php else: ?>
-
 
         <!-- ESTADÍSTICAS GENERALES -->
 
@@ -390,7 +375,6 @@ try {
 
             </div>
 
-
             <div class="col-md-6">
 
                 <div class="card stat-card h-100">
@@ -413,13 +397,11 @@ try {
 
         </div>
 
-
         <!-- RESULTADOS -->
 
         <h2 class="section-title mb-3">
             Resultados por encuesta
         </h2>
-
 
         <?php if (!$encuestas): ?>
 
@@ -429,17 +411,12 @@ try {
 
         <?php endif; ?>
 
-
         <?php foreach ($encuestas as $encuesta): ?>
 
             <?php
-
                 $idEncuesta = (int)$encuesta["id_encuesta"];
-
                 $preguntas = $preguntasPorEncuesta[$idEncuesta] ?? [];
-
             ?>
-
 
             <section class="card panel-card mb-4">
 
@@ -467,7 +444,6 @@ try {
 
                     </div>
 
-
                     <?php if (!$preguntas): ?>
 
                         <p class="text-secondary mb-0">
@@ -476,9 +452,7 @@ try {
 
                     <?php else: ?>
 
-
                         <?php foreach ($preguntas as $pregunta): ?>
-
 
                             <div class="border rounded-3 p-3 mb-3">
 
@@ -494,9 +468,7 @@ try {
 
                                 </div>
 
-
                                 <?php if ($pregunta["opciones"]): ?>
-
 
                                     <!-- GRÁFICO -->
 
@@ -506,7 +478,6 @@ try {
 
                                     </div>
 
-
                                     <!-- TABLA DE RESULTADOS -->
 
                                     <div class="table-responsive mt-3">
@@ -514,12 +485,10 @@ try {
                                         <table class="table table-sm align-middle">
 
                                             <thead>
-
                                                 <tr>
                                                     <th>Opción</th>
                                                     <th class="text-end">Respuestas</th>
                                                 </tr>
-
                                             </thead>
 
                                             <tbody>
@@ -545,7 +514,6 @@ try {
                                         </table>
 
                                     </div>
-
 
                                     <!-- CONFIGURACIÓN DEL GRÁFICO -->
 
@@ -616,9 +584,7 @@ try {
 
                                     </script>
 
-
                                 <?php else: ?>
-
 
                                     <!-- RESPUESTAS ABIERTAS -->
 
@@ -646,14 +612,11 @@ try {
 
                                     <?php endif; ?>
 
-
                                 <?php endif; ?>
 
                             </div>
 
-
                         <?php endforeach; ?>
-
 
                     <?php endif; ?>
 
@@ -661,9 +624,7 @@ try {
 
             </section>
 
-
         <?php endforeach; ?>
-
 
         <!-- RESPUESTAS INDIVIDUALES -->
 
@@ -680,7 +641,6 @@ try {
                     se identifica al participante por su número interno y no se muestran sus datos personales.
                 </p>
 
-
                 <?php if (!$respuestasIndividuales): ?>
 
                     <div class="alert alert-info mb-0">
@@ -689,19 +649,16 @@ try {
 
                 <?php else: ?>
 
-
                     <div class="table-responsive">
 
                         <table class="table table-striped table-hover align-middle">
 
                             <thead>
-
                                 <tr>
                                     <th>Participante (ID)</th>
                                     <th>Pregunta</th>
                                     <th>Respuesta</th>
                                 </tr>
-
                             </thead>
 
                             <tbody>
@@ -732,19 +689,15 @@ try {
 
                     </div>
 
-
                 <?php endif; ?>
 
             </div>
 
         </section>
 
-
     <?php endif; ?>
 
-
 </main>
-
 
 <!-- PIE DE PÁGINA -->
 
@@ -759,7 +712,6 @@ try {
     </p>
 
 </footer>
-
 
 </body>
 </html>
