@@ -385,6 +385,38 @@ function limpiar($dato) {
 
                 </div>
 
+                <!-- MONITOREO DE ENCUESTAS -->
+
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card option-card shadow-sm h-100">
+
+                        <div class="card-body p-4">
+
+                            <div class="medical-icon mb-3">📊</div>
+
+                            <h5 class="fw-bold">
+                                Monitoreo de encuestas
+                            </h5>
+
+                            <p class="text-secondary">
+                                Visualizar respuestas recibidas, estadísticas
+                                y gráficos de satisfacción.
+                            </p>
+
+                            <a href="Encuestas/monitoreoEncuestas.php"
+                               class="btn btn-flem">
+
+                                Ver resultados
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
 
         <!-- PANEL PACIENTE -->
