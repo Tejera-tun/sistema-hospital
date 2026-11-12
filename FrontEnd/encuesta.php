@@ -8,7 +8,7 @@ if (!isset($_SESSION["id"]) || ($_SESSION["rol"] ?? "") !== "Paciente") {
     exit;
 }
 
-require_once __DIR__ . "/../BackEnd/conexion_encuestas.php";
+require_once __DIR__ . "/../BackEnd/Encuestas/conexion_encuestas.php";
 
 $id_encuesta = 1;
 
