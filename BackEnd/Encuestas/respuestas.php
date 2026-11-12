@@ -420,13 +420,11 @@ try {
 
     $conexion->close();
 
-    mostrarResultado(
-        "No se pudo enviar la encuesta",
-        $e instanceof mysqli_sql_exception
-            ? "Ocurrió un problema al guardar tus respuestas. Intentá nuevamente."
-            : $e->getMessage(),
-        false
-    );
+   mostrarResultado(
+    "Error al enviar la encuesta",
+    $e->getMessage(),
+    false
+);
 }
 
 ?>
