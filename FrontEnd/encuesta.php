@@ -368,7 +368,8 @@ $preguntas = $stmt->get_result();
 
             </div>
 
-            <form action="../BackEnd/respuestas.php" method="POST">
+            <!-- RUTA CORREGIDA -->
+            <form action="../BackEnd/Encuestas/respuestas.php" method="POST">
 
                 <input
                     type="hidden"
@@ -493,3 +494,4 @@ $stmt->close();
 $conexion->close();
 
 ?>
+111
