@@ -1,48 +1,100 @@
 <!DOCTYPE html>
-
 <html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLEM | Sistema Hospitalario</title>
+    <link rel="stylesheet" href="FrontEnd/css/estilo.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-<head> 
-<meta charset="UTF-8"> 
-<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-<title>Clínica - Página transitoria</title> 
-
-<link rel="stylesheet" href="FrontEnd/css/estilo.css">
-
+    <style>
+        .qr-section {
+            margin-top: 28px;
+            padding: 28px 20px;
+            text-align: center;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+        }
+        .qr-section h2 { margin-bottom: 10px; }
+        .qr-section p { margin-bottom: 18px; }
+        #qrcode {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+            background: #ffffff;
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            min-width: 224px;
+            min-height: 224px;
+        }
+        #qrcode img, #qrcode canvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+        .qr-caption {
+            margin-top: 14px;
+            color: #555;
+            font-size: 0.95rem;
+        }
+    </style>
 </head>
 
 <body class="pagina-inicio">
-
 <header>
     <h1>FLEM</h1>
     <p>Bienvenido!!</p>
-
 </header>
 
 <main>
-
     <section>
         <h2>Información general</h2>
-
         <p>
-            FLEM es la empresa especializada en la digitalizacion de la clinica hospitalaria.nuestro objetivo es brindar un servicio de calidad y confianza a nuestros pacientes, con el fin de mejorar su experiencia y bienestar.
-            usted ahora se encuentra en la pagina transitoria de nuestra clinica, aqui podra acceder a su cuenta o registrarse para poder tener acceso a todos los servicios que ofrecemos como lo son el acceso a documentos personales y folletos medicos de forma digital sin la necesidad de cargar con una gran cantidad de papeles entreverados.
-            tambien ofrecemos un sistema de encuestas para conocer su opinion y poder desarrollar el sistema de forma que se le sea mas comodo y sencillo de usar, ademas de tambien ayudarnos a mejorar el sistema hospitalario en si.
-
+            FLEM es la empresa especializada en la digitalización de la clínica hospitalaria.
+            Nuestro objetivo es brindar un servicio de calidad y confianza a los pacientes,
+            mejorando su experiencia y bienestar. Desde esta página podrá acceder a su cuenta
+            o registrarse para utilizar los servicios disponibles, como la consulta de documentos
+            personales y folletos médicos en formato digital. También contamos con un sistema
+            de encuestas para conocer la opinión de los usuarios y continuar mejorando el sistema.
         </p>
     </section>
 
     <section>
         <h2>Acceso</h2>
-
         <a class="boton-acceso" href="FrontEnd/login.html">Iniciar sesión</a>
-
         <a class="boton-acceso" href="FrontEnd/registro.html">Registrarse</a>
-
     </section>
 
+    <section class="qr-section">
+        <h2>Accedé desde tu celular</h2>
+        <p>Escaneá este código QR para ingresar a la página principal de FLEM.</p>
+        <div id="qrcode" aria-label="Código QR para acceder al sistema FLEM"></div>
+        <div class="qr-caption">Sistema Hospitalario FLEM</div>
+    </section>
 </main>
 
-</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const contenedorQR = document.getElementById("qrcode");
 
+        // Este enlace debe coincidir con la dirección pública del sitio.
+        const urlSistema = "https://sistemahospitalflem.site.je/";
+
+        if (typeof QRCode !== "undefined") {
+            new QRCode(contenedorQR, {
+                text: urlSistema,
+                width: 200,
+                height: 200,
+                colorDark: "#075c45",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        } else {
+            contenedorQR.textContent = "No se pudo cargar la librería para generar el QR.";
+        }
+    });
+</script>
+</body>
 </html>
