@@ -470,7 +470,7 @@ try {
 
                                 <?php if ($pregunta["opciones"]): ?>
 
-                                    <!-- GRÁFICO -->
+                                    <!-- GRÁFICO DE DONA -->
 
                                     <div class="chart-wrap mt-3">
 
@@ -522,63 +522,82 @@ try {
                                     new Chart(
                                         document.getElementById('grafico-<?= $pregunta["id"] ?>'),
                                         {
-                                            type: 'bar',
+                                            type: 'doughnut',
 
                                             data: {
-
                                                 labels: <?= json_encode(
                                                     array_column($pregunta["opciones"], "texto"),
                                                     JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
                                                 ) ?>,
 
                                                 datasets: [{
-
-                                                    label: 'Cantidad de respuestas',
+                                                    label: 'Respuestas',
 
                                                     data: <?= json_encode(
                                                         array_column($pregunta["opciones"], "cantidad")
                                                     ) ?>,
 
-                                                    backgroundColor: '#0a7658',
+                                                    backgroundColor: [
+                                                        '#075c45',
+                                                        '#0a7658',
+                                                        '#d4af37',
+                                                        '#2878B5',
+                                                        '#E67E22',
+                                                        '#8E44AD',
+                                                        '#16A085',
+                                                        '#C0392B',
+                                                        '#7F8C8D',
+                                                        '#2C3E50',
+                                                        '#D35400',
+                                                        '#9B59B6'
+                                                    ],
 
-                                                    borderColor: '#075c45',
-
-                                                    borderWidth: 1,
-
-                                                    borderRadius: 6
-
+                                                    borderColor: '#ffffff',
+                                                    borderWidth: 3,
+                                                    hoverOffset: 8
                                                 }]
-
                                             },
 
                                             options: {
-
                                                 responsive: true,
-
                                                 maintainAspectRatio: false,
-
-                                                indexAxis: 'y',
+                                                cutout: '58%',
 
                                                 plugins: {
                                                     legend: {
-                                                        display: false
-                                                    }
-                                                },
+                                                        display: true,
+                                                        position: 'bottom',
+                                                        labels: {
+                                                            usePointStyle: true,
+                                                            pointStyle: 'circle',
+                                                            padding: 16,
+                                                            boxWidth: 10,
+                                                            color: '#26352f'
+                                                        }
+                                                    },
 
-                                                scales: {
+                                                    tooltip: {
+                                                        callbacks: {
+                                                            label: function(context) {
+                                                                const valores = context.dataset.data;
+                                                                const total = valores.reduce(
+                                                                    (suma, valor) => suma + Number(valor),
+                                                                    0
+                                                                );
 
-                                                    x: {
-                                                        beginAtZero: true,
+                                                                const cantidad = Number(context.raw);
+                                                                const porcentaje = total > 0
+                                                                    ? ((cantidad / total) * 100).toFixed(1)
+                                                                    : '0.0';
 
-                                                        ticks: {
-                                                            precision: 0
+                                                                return ' ' + context.label + ': ' +
+                                                                    cantidad + ' respuestas (' +
+                                                                    porcentaje + '%)';
+                                                            }
                                                         }
                                                     }
-
                                                 }
-
                                             }
-
                                         }
                                     );
 

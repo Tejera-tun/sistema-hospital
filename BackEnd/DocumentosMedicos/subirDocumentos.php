@@ -34,16 +34,42 @@ $id_paciente = filter_input(
 );
 
 $nombre = trim($_POST["nombre_documento"] ?? "");
-$categoria = $_POST["categoria"] ?? "";
+$categoria = trim($_POST["categoria"] ?? "");
 $descripcion = trim($_POST["descripcion"] ?? "");
 
+// =====================================
+// 3. CATEGORÍAS MÉDICAS PERMITIDAS
+// =====================================
+
 $categoriasPermitidas = [
-    "Analisis clinicos",
-    "Estudios medicos",
-    "Informes medicos",
-    "Recetas medicas",
-    "Otros"
+
+    "Indicaciones de interrupción voluntaria del embarazo",
+
+    "Prostatectomía radical (indicaciones e información para el paciente)",
+
+    "Preparación para estudios imagenológicos",
+
+    "Estudios diagnósticos con pertecnetato",
+
+    "Centellograma de perfusión miocárdica",
+
+    "Indicaciones ecocardiograma con dobutamina",
+
+    "Indicaciones para pacientes en tratamiento con warfarina",
+
+    "Indicaciones ecocardiograma transesofágico",
+
+    "Indicaciones para ingreso a centro de nefrología y trasplante",
+
+    "Plan de alta de enfermería, Nefrología",
+
+    "Indicaciones de enfermería para usuarios trasplantados",
+
+    "Prevención de infecciones"
+
 ];
+
+// Validar los datos recibidos.
 
 if (
     !$id_paciente ||
@@ -58,7 +84,7 @@ if (strlen($nombre) > 200) {
 }
 
 // =====================================
-// 3. VERIFICAR QUE EXISTA EL PACIENTE
+// 4. VERIFICAR QUE EXISTA EL PACIENTE
 // =====================================
 
 $consulta = $conexion->prepare(
@@ -84,7 +110,7 @@ if ($resultado->num_rows !== 1) {
 $consulta->close();
 
 // =====================================
-// 4. VALIDAR ARCHIVO
+// 5. VALIDAR ARCHIVO
 // =====================================
 
 if (!isset($_FILES["documento"])) {
@@ -109,7 +135,7 @@ if (
 }
 
 // =====================================
-// 5. VALIDAR FORMATO Y CONTENIDO
+// 6. VALIDAR FORMATO Y CONTENIDO
 // =====================================
 
 $extension = strtolower(
@@ -150,7 +176,7 @@ if (!in_array($mime, $tiposPermitidos[$extension], true)) {
 }
 
 // =====================================
-// 6. COMPROBAR DOCUMENTOS OFFICE
+// 7. COMPROBAR DOCUMENTOS OFFICE
 // =====================================
 
 if (in_array($extension, ["docx", "xlsx"], true)) {
@@ -181,20 +207,18 @@ if (in_array($extension, ["docx", "xlsx"], true)) {
 }
 
 // =====================================
-// 7. CREAR Y VERIFICAR ALMACENAMIENTO
+// 8. CREAR Y VERIFICAR ALMACENAMIENTO
 // =====================================
 
-// Obtener la carpeta principal del proyecto.
 $directorioPrincipal = dirname(__DIR__, 2);
 
-// Definir la carpeta de almacenamiento.
 $directorio = $directorioPrincipal
     . DIRECTORY_SEPARATOR
     . "Documentos Medicos"
     . DIRECTORY_SEPARATOR
     . "documentos_medicos";
 
-// CREAR LA CARPETA AUTOMÁTICAMENTE SI NO EXISTE.
+// Crear la carpeta si no existe.
 
 if (!is_dir($directorio)) {
 
@@ -204,18 +228,16 @@ if (!is_dir($directorio)) {
 
 }
 
-// Verificar que realmente exista.
 if (!is_dir($directorio)) {
     die("No se pudo encontrar la carpeta de almacenamiento.");
 }
 
-// Verificar permisos de escritura.
 if (!is_writable($directorio)) {
     die("No hay permisos para guardar documentos en esta carpeta.");
 }
 
 // =====================================
-// 8. GENERAR NOMBRE SEGURO
+// 9. GENERAR NOMBRE SEGURO
 // =====================================
 
 $nombreArchivo = bin2hex(random_bytes(24))
@@ -225,16 +247,14 @@ $rutaDestino = $directorio
     . DIRECTORY_SEPARATOR
     . $nombreArchivo;
 
-// Guardar archivo físicamente.
 if (!move_uploaded_file($archivo["tmp_name"], $rutaDestino)) {
     die("No se pudo guardar el archivo.");
 }
 
 // =====================================
-// 9. GUARDAR INFORMACIÓN EN MYSQL
+// 10. GUARDAR INFORMACIÓN EN MYSQL
 // =====================================
 
-// Ruta relativa que se almacena en la base de datos.
 $rutaBD = "Documentos Medicos/documentos_medicos/" . $nombreArchivo;
 
 $id_administrador = (int)$_SESSION["id"];
@@ -275,7 +295,7 @@ $consulta->bind_param(
 );
 
 // =====================================
-// 10. EJECUTAR REGISTRO
+// 11. EJECUTAR REGISTRO
 // =====================================
 
 if ($consulta->execute()) {
@@ -373,7 +393,6 @@ if ($consulta->execute()) {
 
 } else {
 
-    // Si falla MySQL, eliminar el archivo que acabamos de subir.
     if (is_file($rutaDestino)) {
         unlink($rutaDestino);
     }

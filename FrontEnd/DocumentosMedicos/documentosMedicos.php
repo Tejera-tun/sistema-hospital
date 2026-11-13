@@ -362,18 +362,18 @@ function limpiar($dato) {
                                 name="nombre_documento"
                                 class="form-control"
                                 maxlength="200"
-                                placeholder="Ej: Análisis de sangre"
+                                placeholder="Ej: Documento médico"
                                 required>
 
                         </div>
 
 
-                        <!-- CATEGORIA -->
+                        <!-- CATEGORÍAS MÉDICAS -->
 
                         <div class="mb-4">
 
                             <label class="form-label">
-                                Categoría del documento
+                                Tipo de documento médico
                             </label>
 
                             <select
@@ -382,27 +382,55 @@ function limpiar($dato) {
                                 required>
 
                                 <option value="">
-                                    Seleccionar categoría
+                                    Seleccionar tipo de documento
                                 </option>
 
-                                <option value="Analisis clinicos">
-                                    Análisis clínicos
+                                <option value="Indicaciones de interrupción voluntaria del embarazo">
+                                    Indicaciones de interrupción voluntaria del embarazo
                                 </option>
 
-                                <option value="Estudios medicos">
-                                    Estudios médicos
+                                <option value="Prostatectomía radical (indicaciones e información para el paciente)">
+                                    Prostatectomía radical (indicaciones e información para el paciente)
                                 </option>
 
-                                <option value="Informes medicos">
-                                    Informes médicos
+                                <option value="Preparación para estudios imagenológicos">
+                                    Preparación para estudios imagenológicos
                                 </option>
 
-                                <option value="Recetas medicas">
-                                    Recetas médicas
+                                <option value="Estudios diagnósticos con pertecnetato">
+                                    Estudios diagnósticos con pertecnetato
                                 </option>
 
-                                <option value="Otros">
-                                    Otros documentos
+                                <option value="Centellograma de perfusión miocárdica">
+                                    Centellograma de perfusión miocárdica
+                                </option>
+
+                                <option value="Indicaciones ecocardiograma con dobutamina">
+                                    Indicaciones ecocardiograma con dobutamina
+                                </option>
+
+                                <option value="Indicaciones para pacientes en tratamiento con warfarina">
+                                    Indicaciones para pacientes en tratamiento con warfarina
+                                </option>
+
+                                <option value="Indicaciones ecocardiograma transesofágico">
+                                    Indicaciones ecocardiograma transesofágico
+                                </option>
+
+                                <option value="Indicaciones para ingreso a centro de nefrología y trasplante">
+                                    Indicaciones para ingreso a centro de nefrología y trasplante
+                                </option>
+
+                                <option value="Plan de alta de enfermería, Nefrología">
+                                    Plan de alta de enfermería, Nefrología
+                                </option>
+
+                                <option value="Indicaciones de enfermería para usuarios trasplantados">
+                                    Indicaciones de enfermería para usuarios trasplantados
+                                </option>
+
+                                <option value="Prevención de infecciones">
+                                    Prevención de infecciones
                                 </option>
 
                             </select>
@@ -410,7 +438,7 @@ function limpiar($dato) {
                         </div>
 
 
-                        <!-- DESCRIPCION -->
+                        <!-- DESCRIPCIÓN -->
 
                         <div class="mb-4">
 
